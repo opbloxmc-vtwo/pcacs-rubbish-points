@@ -90,26 +90,17 @@
         }
 
 
-        .loginButton:hover {
-
-            background-color: #1aaa35;
-
-        }
-
-
         #error {
 
             color: #ff4444;
 
             font-weight: bold;
 
-            min-height: 20px;
-
         }
 
 
         /* =====================================
-           TEACHER PANEL
+           PANEL
         ====================================== */
 
         #teacherPanel {
@@ -151,30 +142,22 @@
 
 
         .limbeck {
-
             border-color: green;
-
         }
 
 
         .laurence {
-
             border-color: yellow;
-
         }
 
 
         .moody {
-
             border-color: blue;
-
         }
 
 
         .murry {
-
             border-color: red;
-
         }
 
 
@@ -224,15 +207,13 @@
         }
 
 
-        .reset {
+        .faction-reset {
 
-            background-color: orange;
+            background-color: #ff9800;
 
-            color: black;
+            color: #000000;
 
-            font-weight: bold;
-
-            padding: 14px 25px;
+            width: 90%;
 
         }
 
@@ -246,24 +227,136 @@
         }
 
 
-        .status {
+        /* =====================================
+           TOASTS
+        ====================================== */
 
-            min-height: 20px;
+        #toastContainer {
+
+            position: fixed;
+
+            top: 20px;
+
+            right: 20px;
+
+            z-index: 9999;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
 
         }
 
 
-        .back {
+        .toast {
 
-            color: cyan;
+            min-width: 280px;
 
-            text-decoration: none;
+            max-width: 380px;
+
+            padding: 15px 20px;
+
+            background-color: #222222;
+
+            color: white;
+
+            border-left: 5px solid #4caf50;
+
+            border-radius: 8px;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.5);
+
+            animation:
+                toastIn 0.25s ease;
+
+            text-align: left;
+
+        }
+
+
+        .toast.error {
+
+            border-left-color: #f44336;
+
+        }
+
+
+        .toast.warning {
+
+            border-left-color: #ff9800;
+
+        }
+
+
+        .toast-title {
+
+            font-weight: bold;
+
+            margin-bottom: 4px;
+
+        }
+
+
+        .toast-message {
+
+            color: #cccccc;
+
+            font-size: 14px;
+
+        }
+
+
+        @keyframes toastIn {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateX(30px);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateX(0);
+
+            }
+
+        }
+
+
+        @keyframes toastOut {
+
+            from {
+
+                opacity: 1;
+
+                transform:
+                    translateX(0);
+
+            }
+
+            to {
+
+                opacity: 0;
+
+                transform:
+                    translateX(30px);
+
+            }
 
         }
 
 
         /* =====================================
-           LOGGING
+           LOGS
         ====================================== */
 
         .logs-section {
@@ -273,13 +366,6 @@
             margin: 50px auto;
 
             padding: 20px;
-
-        }
-
-
-        .logs-section h2 {
-
-            margin-bottom: 20px;
 
         }
 
@@ -399,6 +485,15 @@
         }
 
 
+        .back {
+
+            color: cyan;
+
+            text-decoration: none;
+
+        }
+
+
         @media (max-width: 800px) {
 
             .factions {
@@ -430,7 +525,15 @@
 
 
     <!-- =====================================
-         LOGIN SCREEN
+         TOAST CONTAINER
+    ====================================== -->
+
+    <div id="toastContainer"></div>
+
+
+
+    <!-- =====================================
+         LOGIN
     ====================================== -->
 
     <div id="loginScreen">
@@ -438,7 +541,6 @@
         <h1>
             🔒 Teacher Login
         </h1>
-
 
         <p>
             Sign in with your teacher account.
@@ -451,9 +553,6 @@
             placeholder="Teacher Email"
             autocomplete="username"
         >
-
-
-        <br>
 
 
         <input
@@ -493,15 +592,13 @@
 
 
         <p>
+
             Logged in as:
             <b id="teacherEmail"></b>
+
         </p>
 
 
-
-        <!-- =================================
-             FACTION CONTROLS
-        ================================== -->
 
         <div class="factions">
 
@@ -525,17 +622,28 @@
 
                 <button
                     class="add"
-                    onclick="changePoints('limbeck', 2)"
+                    onclick="changePoints('limbeck', 1)"
                 >
-                    +2 Points
+                    +1 Point
                 </button>
 
 
                 <button
                     class="remove"
-                    onclick="changePoints('limbeck', -2)"
+                    onclick="changePoints('limbeck', -1)"
                 >
-                    -2 Points
+                    -1 Point
+                </button>
+
+
+                <br>
+
+
+                <button
+                    class="faction-reset"
+                    onclick="resetFaction('limbeck')"
+                >
+                    🔄 Reset Limbeck
                 </button>
 
             </div>
@@ -561,17 +669,28 @@
 
                 <button
                     class="add"
-                    onclick="changePoints('laurence', 2)"
+                    onclick="changePoints('laurence', 1)"
                 >
-                    +2 Points
+                    +1 Point
                 </button>
 
 
                 <button
                     class="remove"
-                    onclick="changePoints('laurence', -2)"
+                    onclick="changePoints('laurence', -1)"
                 >
-                    -2 Points
+                    -1 Point
+                </button>
+
+
+                <br>
+
+
+                <button
+                    class="faction-reset"
+                    onclick="resetFaction('laurence')"
+                >
+                    🔄 Reset Laurence
                 </button>
 
             </div>
@@ -597,17 +716,28 @@
 
                 <button
                     class="add"
-                    onclick="changePoints('moody', 2)"
+                    onclick="changePoints('moody', 1)"
                 >
-                    +2 Points
+                    +1 Point
                 </button>
 
 
                 <button
                     class="remove"
-                    onclick="changePoints('moody', -2)"
+                    onclick="changePoints('moody', -1)"
                 >
-                    -2 Points
+                    -1 Point
+                </button>
+
+
+                <br>
+
+
+                <button
+                    class="faction-reset"
+                    onclick="resetFaction('moody')"
+                >
+                    🔄 Reset Moody
                 </button>
 
             </div>
@@ -633,17 +763,28 @@
 
                 <button
                     class="add"
-                    onclick="changePoints('murry', 2)"
+                    onclick="changePoints('murry', 1)"
                 >
-                    +2 Points
+                    +1 Point
                 </button>
 
 
                 <button
                     class="remove"
-                    onclick="changePoints('murry', -2)"
+                    onclick="changePoints('murry', -1)"
                 >
-                    -2 Points
+                    -1 Point
+                </button>
+
+
+                <br>
+
+
+                <button
+                    class="faction-reset"
+                    onclick="resetFaction('murry')"
+                >
+                    🔄 Reset Murry
                 </button>
 
             </div>
@@ -653,28 +794,9 @@
 
 
 
-        <!-- =================================
-             RESET
-        ================================== -->
-
-        <button
-            class="reset"
-            onclick="resetAllPoints()"
-        >
-            ⚠ RESET ALL POINTS
-        </button>
-
-
-        <p
-            id="status"
-            class="status"
-        ></p>
-
-
-
-        <!-- =================================
-             LOGGING
-        ================================== -->
+        <!-- =====================================
+             LOGS
+        ====================================== -->
 
         <div class="logs-section">
 
@@ -731,9 +853,7 @@
                 </select>
 
 
-                <button
-                    onclick="loadLogs()"
-                >
+                <button onclick="loadLogs()">
                     🔄 Refresh Logs
                 </button>
 
@@ -748,33 +868,19 @@
 
                         <tr>
 
-                            <th>
-                                Date / Time
-                            </th>
+                            <th>Date / Time</th>
 
-                            <th>
-                                Teacher
-                            </th>
+                            <th>Teacher</th>
 
-                            <th>
-                                Action
-                            </th>
+                            <th>Action</th>
 
-                            <th>
-                                Faction
-                            </th>
+                            <th>Faction</th>
 
-                            <th>
-                                Change
-                            </th>
+                            <th>Change</th>
 
-                            <th>
-                                Before
-                            </th>
+                            <th>Before</th>
 
-                            <th>
-                                After
-                            </th>
+                            <th>After</th>
 
                         </tr>
 
@@ -804,10 +910,6 @@
 
 
 
-        <!-- =================================
-             LOGOUT
-        ================================== -->
-
         <button
             class="logout"
             onclick="logout()"
@@ -831,23 +933,15 @@
 
 
 
-    <!-- =====================================
-         SUPABASE
-    ====================================== -->
-
     <script
         src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
     ></script>
 
 
-    <!-- SHARED CODE -->
-
     <script src="main.js"></script>
 
-
-    <!-- TEACHER CODE -->
-
     <script src="teacher.js"></script>
+
 
 </body>
 
