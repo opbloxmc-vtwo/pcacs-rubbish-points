@@ -5,7 +5,6 @@
 const SUPABASE_URL =
     "https://pozzgdgkqnspksidixkv.supabase.co";
 
-
 const SUPABASE_KEY =
     "sb_publishable_nHzAUpD33rmZTKttdzwDgg_Q7Cy6QZq";
 
@@ -65,7 +64,7 @@ async function loadPoints() {
 
 
 // ============================================
-// LOAD POINTS WHEN PAGE OPENS
+// INITIAL LOAD
 // ============================================
 
 loadPoints();
@@ -74,8 +73,6 @@ loadPoints();
 // ============================================
 // AUTOMATIC REFRESH
 // ============================================
-
-// Refresh every 2 seconds.
 
 setInterval(function() {
 
