@@ -1,5 +1,64 @@
 // ============================================
-// TEACHER LOGIN
+// TOAST SYSTEM
+// ============================================
+
+function showToast(
+    title,
+    message,
+    type = "success",
+    duration = 3500
+) {
+
+    const container =
+        document.getElementById(
+            "toastContainer"
+        );
+
+
+    const toast =
+        document.createElement("div");
+
+
+    toast.className =
+        "toast " + type;
+
+
+    toast.innerHTML = `
+
+        <div class="toast-title">
+            ${escapeHtml(title)}
+        </div>
+
+        <div class="toast-message">
+            ${escapeHtml(message)}
+        </div>
+
+    `;
+
+
+    container.appendChild(toast);
+
+
+    setTimeout(function() {
+
+        toast.style.animation =
+            "toastOut 0.25s ease";
+
+
+        setTimeout(function() {
+
+            toast.remove();
+
+        }, 250);
+
+    }, duration);
+
+}
+
+
+
+// ============================================
+// LOGIN
 // ============================================
 
 async function login() {
@@ -26,8 +85,11 @@ async function login() {
 
     if (!email || !password) {
 
-        errorElement.textContent =
-            "❌ Please enter your email and password.";
+        showToast(
+            "Login Failed",
+            "Please enter your email and password.",
+            "error"
+        );
 
         return;
 
@@ -38,33 +100,46 @@ async function login() {
         data,
         error
     } =
-        await supabaseClient.auth.signInWithPassword({
+        await supabaseClient.auth
+            .signInWithPassword({
 
-            email: email,
+                email: email,
 
-            password: password
+                password: password
 
-        });
+            });
 
 
     if (error) {
 
-        errorElement.textContent =
-            "❌ " + error.message;
+        showToast(
+            "Login Failed",
+            error.message,
+            "error"
+        );
 
         return;
 
     }
 
 
-    showTeacherPanel(data.user);
+    showToast(
+        "Welcome!",
+        "You have successfully logged in.",
+        "success"
+    );
+
+
+    showTeacherPanel(
+        data.user
+    );
 
 }
 
 
 
 // ============================================
-// SHOW TEACHER PANEL
+// SHOW PANEL
 // ============================================
 
 function showTeacherPanel(user) {
@@ -81,7 +156,8 @@ function showTeacherPanel(user) {
 
     document.getElementById(
         "teacherEmail"
-    ).textContent = user.email;
+    ).textContent =
+        user.email;
 
 
     loadPoints();
@@ -93,7 +169,7 @@ function showTeacherPanel(user) {
 
 
 // ============================================
-// CHECK EXISTING LOGIN
+// CHECK LOGIN
 // ============================================
 
 async function checkLogin() {
@@ -103,7 +179,8 @@ async function checkLogin() {
             user
         }
     } =
-        await supabaseClient.auth.getUser();
+        await supabaseClient.auth
+            .getUser();
 
 
     if (user) {
@@ -140,16 +217,18 @@ async function logout() {
     ).value = "";
 
 
-    document.getElementById(
-        "error"
-    ).textContent = "";
+    showToast(
+        "Logged Out",
+        "You have been logged out.",
+        "success"
+    );
 
 }
 
 
 
 // ============================================
-// ADD / REMOVE POINTS
+// CHANGE POINTS
 // ============================================
 
 async function changePoints(
@@ -157,28 +236,209 @@ async function changePoints(
     amount
 ) {
 
-    const status =
-        document.getElementById("status");
+    const {
+        data: {
+            user
+        }
+    } =
+        await supabaseClient.auth
+            .getUser();
 
 
-    status.textContent =
-        "Updating...";
+    if (!user) {
+
+        showToast(
+            "Not Logged In",
+            "Please log in again.",
+            "error"
+        );
+
+        return;
+
+    }
 
 
-    // Get logged-in teacher
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("factions")
+            .select("points")
+            .eq("name", faction)
+            .single();
+
+
+    if (error) {
+
+        console.error(error);
+
+        showToast(
+            "Error",
+            "Failed to get faction points.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const pointsBefore =
+        data.points;
+
+
+    let newPoints =
+        pointsBefore + amount;
+
+
+    if (newPoints < 0) {
+
+        newPoints = 0;
+
+    }
+
+
+    const actualChange =
+        newPoints - pointsBefore;
+
+
+    const {
+        error: updateError
+    } =
+        await supabaseClient
+            .from("factions")
+            .update({
+
+                points: newPoints
+
+            })
+            .eq("name", faction);
+
+
+    if (updateError) {
+
+        console.error(updateError);
+
+        showToast(
+            "Update Failed",
+            updateError.message,
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    // ========================================
+    // LOG
+    // ========================================
+
+    const {
+        error: logError
+    } =
+        await supabaseClient
+            .from("point_logs")
+            .insert({
+
+                teacher_email:
+                    user.email,
+
+                action:
+                    actualChange >= 0
+                        ? "ADD_POINTS"
+                        : "REMOVE_POINTS",
+
+                faction:
+                    faction,
+
+                points_change:
+                    actualChange,
+
+                points_before:
+                    pointsBefore,
+
+                points_after:
+                    newPoints
+
+            });
+
+
+    if (logError) {
+
+        console.error(
+            "Logging failed:",
+            logError
+        );
+
+    }
+
+
+    const factionDisplay =
+        faction.charAt(0).toUpperCase()
+        + faction.slice(1);
+
+
+    if (actualChange > 0) {
+
+        showToast(
+            "Points Added",
+            `${factionDisplay} received +${actualChange} point${actualChange === 1 ? "" : "s"}.`,
+            "success"
+        );
+
+    } else if (actualChange < 0) {
+
+        showToast(
+            "Points Removed",
+            `${factionDisplay} lost ${Math.abs(actualChange)} point${Math.abs(actualChange) === 1 ? "" : "s"}.`,
+            "warning"
+        );
+
+    } else {
+
+        showToast(
+            "No Change",
+            `${factionDisplay} already has 0 points.`,
+            "warning"
+        );
+
+    }
+
+
+    loadPoints();
+
+    loadLogs();
+
+}
+
+
+
+// ============================================
+// RESET ONE FACTION
+// ============================================
+
+async function resetFaction(
+    faction
+) {
 
     const {
         data: {
             user
         }
     } =
-        await supabaseClient.auth.getUser();
+        await supabaseClient.auth
+            .getUser();
 
 
     if (!user) {
 
-        status.textContent =
-            "❌ You are not logged in.";
+        showToast(
+            "Not Logged In",
+            "Please log in again.",
+            "error"
+        );
 
         return;
 
@@ -202,8 +462,11 @@ async function changePoints(
 
         console.error(error);
 
-        status.textContent =
-            "❌ Failed to get current points.";
+        showToast(
+            "Error",
+            "Failed to get faction points.",
+            "error"
+        );
 
         return;
 
@@ -214,26 +477,22 @@ async function changePoints(
         data.points;
 
 
-    let newPoints =
-        pointsBefore + amount;
+    // Nothing to reset
 
+    if (pointsBefore === 0) {
 
-    // Prevent negative points
+        showToast(
+            "Already Reset",
+            `${faction} already has 0 points.`,
+            "warning"
+        );
 
-    if (newPoints < 0) {
-
-        newPoints = 0;
+        return;
 
     }
 
 
-    const actualChange =
-        newPoints - pointsBefore;
-
-
-    // ========================================
-    // UPDATE FACTION
-    // ========================================
+    // Reset
 
     const {
         error: updateError
@@ -242,7 +501,7 @@ async function changePoints(
             .from("factions")
             .update({
 
-                points: newPoints
+                points: 0
 
             })
             .eq("name", faction);
@@ -252,8 +511,11 @@ async function changePoints(
 
         console.error(updateError);
 
-        status.textContent =
-            "❌ Failed to update points.";
+        showToast(
+            "Reset Failed",
+            updateError.message,
+            "error"
+        );
 
         return;
 
@@ -261,7 +523,7 @@ async function changePoints(
 
 
     // ========================================
-    // CREATE LOG
+    // LOG RESET
     // ========================================
 
     const {
@@ -275,21 +537,19 @@ async function changePoints(
                     user.email,
 
                 action:
-                    actualChange > 0
-                        ? "ADD_POINTS"
-                        : "REMOVE_POINTS",
+                    "RESET",
 
                 faction:
                     faction,
 
                 points_change:
-                    actualChange,
+                    -pointsBefore,
 
                 points_before:
                     pointsBefore,
 
                 points_after:
-                    newPoints
+                    0
 
             });
 
@@ -297,177 +557,23 @@ async function changePoints(
     if (logError) {
 
         console.error(
-            "Failed to create log:",
+            "Logging failed:",
             logError
         );
 
     }
 
 
-    status.textContent =
-        "✅ Points updated!";
+    const factionDisplay =
+        faction.charAt(0).toUpperCase()
+        + faction.slice(1);
 
 
-    loadPoints();
-
-    loadLogs();
-
-}
-
-
-
-// ============================================
-// RESET ALL POINTS
-// ============================================
-
-async function resetAllPoints() {
-
-    const confirmed =
-        confirm(
-            "⚠️ Are you sure you want to reset ALL faction points to 0?"
-        );
-
-
-    if (!confirmed) {
-
-        return;
-
-    }
-
-
-    const {
-        data: {
-            user
-        }
-    } =
-        await supabaseClient.auth.getUser();
-
-
-    if (!user) {
-
-        alert(
-            "You are not logged in."
-        );
-
-        return;
-
-    }
-
-
-    // Get current scores
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("factions")
-            .select("name, points");
-
-
-    if (error) {
-
-        console.error(error);
-
-        return;
-
-    }
-
-
-    // Reset scores
-
-    const {
-        error: updateError
-    } =
-        await supabaseClient
-            .from("factions")
-            .update({
-
-                points: 0
-
-            })
-            .not(
-                "name",
-                "is",
-                null
-            );
-
-
-    if (updateError) {
-
-        console.error(updateError);
-
-        document.getElementById(
-            "status"
-        ).textContent =
-            "❌ Failed to reset points.";
-
-        return;
-
-    }
-
-
-    // ========================================
-    // CREATE RESET LOGS
-    // ========================================
-
-    const logs =
-        data
-            .filter(
-                faction =>
-                    faction.points !== 0
-            )
-            .map(
-                faction => ({
-
-                    teacher_email:
-                        user.email,
-
-                    action:
-                        "RESET",
-
-                    faction:
-                        faction.name,
-
-                    points_change:
-                        -faction.points,
-
-                    points_before:
-                        faction.points,
-
-                    points_after:
-                        0
-
-                })
-            );
-
-
-    if (logs.length > 0) {
-
-        const {
-            error: logError
-        } =
-            await supabaseClient
-                .from("point_logs")
-                .insert(logs);
-
-
-        if (logError) {
-
-            console.error(
-                "Failed to create reset logs:",
-                logError
-            );
-
-        }
-
-    }
-
-
-    document.getElementById(
-        "status"
-    ).textContent =
-        "✅ All points have been reset!";
+    showToast(
+        "Faction Reset",
+        `${factionDisplay} has been reset to 0 points.`,
+        "success"
+    );
 
 
     loadPoints();
@@ -485,7 +591,9 @@ async function resetAllPoints() {
 async function loadLogs() {
 
     const logsBody =
-        document.getElementById("logsBody");
+        document.getElementById(
+            "logsBody"
+        );
 
 
     if (!logsBody) {
@@ -493,15 +601,6 @@ async function loadLogs() {
         return;
 
     }
-
-
-    logsBody.innerHTML = `
-        <tr>
-            <td colspan="7" class="no-logs">
-                Loading logs...
-            </td>
-        </tr>
-    `;
 
 
     const factionFilter =
@@ -554,7 +653,8 @@ async function loadLogs() {
     const {
         data,
         error
-    } = await query;
+    } =
+        await query;
 
 
     if (error) {
@@ -562,14 +662,18 @@ async function loadLogs() {
         console.error(error);
 
         logsBody.innerHTML = `
+
             <tr>
+
                 <td
                     colspan="7"
                     class="no-logs"
                 >
                     ❌ Failed to load logs.
                 </td>
+
             </tr>
+
         `;
 
         return;
@@ -580,14 +684,18 @@ async function loadLogs() {
     if (!data || data.length === 0) {
 
         logsBody.innerHTML = `
+
             <tr>
+
                 <td
                     colspan="7"
                     class="no-logs"
                 >
                     No logs found.
                 </td>
+
             </tr>
+
         `;
 
         return;
@@ -604,8 +712,6 @@ async function loadLogs() {
             document.createElement("tr");
 
 
-        // Format date
-
         const date =
             new Date(
                 log.created_at
@@ -615,8 +721,6 @@ async function loadLogs() {
         const formattedDate =
             date.toLocaleString();
 
-
-        // Action display
 
         let actionText =
             log.action;
@@ -667,8 +771,6 @@ async function loadLogs() {
         }
 
 
-        // Change display
-
         let change =
             log.points_change;
 
@@ -688,7 +790,9 @@ async function loadLogs() {
             </td>
 
             <td>
-                ${escapeHtml(log.teacher_email)}
+                ${escapeHtml(
+                    log.teacher_email
+                )}
             </td>
 
             <td class="${actionClass}">
@@ -725,13 +829,15 @@ async function loadLogs() {
 
 
 // ============================================
-// HTML ESCAPING
+// ESCAPE HTML
 // ============================================
 
 function escapeHtml(value) {
 
-    if (value === null ||
-        value === undefined) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
 
         return "";
 
@@ -770,7 +876,7 @@ function escapeHtml(value) {
 
 
 // ============================================
-// ENTER KEY LOGIN
+// ENTER TO LOGIN
 // ============================================
 
 document
@@ -779,7 +885,10 @@ document
         "keydown",
         function(event) {
 
-            if (event.key === "Enter") {
+            if (
+                event.key ===
+                "Enter"
+            ) {
 
                 login();
 
