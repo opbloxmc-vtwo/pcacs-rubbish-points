@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Rubbish Collection Points</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            background-color: #000000;
+
+            color: #ffffff;
+
+            font-family: Arial, sans-serif;
+
+            text-align: center;
+
+            margin: 0;
+
+        }
+
+
+        h1 {
+
+            margin-top: 35px;
+
+        }
+
+
+        .subtitle {
+
+            font-size: 18px;
+
+        }
+
+
+        .factions {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 20px;
+
+            max-width: 1100px;
+
+            margin: 40px auto;
+
+            padding: 20px;
+
+        }
+
+
+        .faction {
+
+            background-color: #111111;
+
+            border: 2px solid #333333;
+
+            border-radius: 12px;
+
+            padding: 25px;
+
+        }
+
+
+        .limbeck {
+
+            border-color: green;
+
+        }
+
+
+        .laurence {
+
+            border-color: yellow;
+
+        }
+
+
+        .moody {
+
+            border-color: blue;
+
+        }
+
+
+        .murry {
+
+            border-color: red;
+
+        }
+
+
+        .points {
+
+            font-size: 45px;
+
+            font-weight: bold;
+
+            margin: 15px 0;
+
+        }
+
+
+        .milestones {
+
+            background-color: #111111;
+
+            max-width: 700px;
+
+            margin: 30px auto;
+
+            padding: 20px;
+
+            border-radius: 10px;
+
+        }
+
+
+        .milestones p {
+
+            margin: 12px;
+
+        }
+
+
+        .teacher-link {
+
+            display: inline-block;
+
+            margin: 25px;
+
+            color: cyan;
+
+            text-decoration: none;
+
+        }
+
+
+        footer {
+
+            background-color: #000030;
+
+            padding: 12px;
+
+            margin-top: 40px;
+
+        }
+
+
+        @media (max-width: 800px) {
+
+            .factions {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+        }
+
+
+        @media (max-width: 500px) {
+
+            .factions {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <h1>
+        Rubbish Collection Points System
+    </h1>
+
+
+    <p class="subtitle">
+
+        🗑️ 1 Piece of Rubbish =
+        <b>2 Points</b>
+
+    </p>
+
+
+    <!-- =====================================
+         FACTIONS
+    ====================================== -->
+
+    <div class="factions">
+
+
+        <!-- LIMBECK -->
+
+        <div class="faction limbeck">
+
+            <h2 style="color: green;">
+                Limbeck
+            </h2>
+
+            <div
+                class="points"
+                id="limbeckPoints"
+            >
+                0
+            </div>
+
+            <p>
+                Points
+            </p>
+
+        </div>
+
+
+
+        <!-- LAURENCE -->
+
+        <div class="faction laurence">
+
+            <h2 style="color: yellow;">
+                Laurence
+            </h2>
+
+            <div
+                class="points"
+                id="laurencePoints"
+            >
+                0
+            </div>
+
+            <p>
+                Points
+            </p>
+
+        </div>
+
+
+
+        <!-- MOODY -->
+
+        <div class="faction moody">
+
+            <h2 style="color: blue;">
+                Moody
+            </h2>
+
+            <div
+                class="points"
+                id="moodyPoints"
+            >
+                0
+            </div>
+
+            <p>
+                Points
+            </p>
+
+        </div>
+
+
+
+        <!-- MURRY -->
+
+        <div class="faction murry">
+
+            <h2 style="color: red;">
+                Murry
+            </h2>
+
+            <div
+                class="points"
+                id="murryPoints"
+            >
+                0
+            </div>
+
+            <p>
+                Points
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================
+         MILESTONES
+    ====================================== -->
+
+    <div class="milestones">
+
+        <h2>
+            🏆 Milestones
+        </h2>
+
+
+        <p>
+            » <b>1000 Points:</b>
+            Icy Poles for whole faction.
+        </p>
+
+
+        <p>
+            » <b>2000 Points:</b>
+            15 min extra time for recess or lunch
+            for the faction.
+        </p>
+
+
+        <p>
+            » <b>3000 Points:</b> Froyo for whole faction.
+        </p>
+
+
+        <p>
+            » <b>4000 Points:</b> 30 min extra time for recess or lunch
+            for the faction.
+        </p>
+
+
+        <p>
+            » <b>5000 Points:</b> $0.50 for everyone in the faction.
+        </p>
+
+    </div>
+
+
+
+    <!-- TEACHER LOGIN -->
+
+    <a
+        class="teacher-link"
+        href="teacherpage.html"
+    >
+        🔒 Teacher Login
+    </a>
+
+
+
+    <footer>
+
+        <p>
+            &copy; Copyright By Ben Rodda 2026
+        </p>
+
+    </footer>
+
+
+
+    <!-- =====================================
+         SUPABASE
+    ====================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <!-- MAIN JS -->
+
+    <script src="main.js"></script>
+
+</body>
+
+</html>
