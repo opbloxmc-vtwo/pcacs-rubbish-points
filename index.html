@@ -5,13 +5,9 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Rubbish Collection Points</title>
-
 
     <style>
 
@@ -19,170 +15,97 @@
             box-sizing: border-box;
         }
 
-
         body {
-
             background-color: #000000;
-
             color: #ffffff;
-
             font-family: Arial, sans-serif;
-
             text-align: center;
-
             margin: 0;
-
         }
-
 
         h1 {
-
             margin-top: 35px;
-
         }
-
 
         .subtitle {
-
             font-size: 18px;
-
         }
-
 
         .factions {
-
             display: grid;
-
-            grid-template-columns:
-                repeat(4, 1fr);
-
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
-
             max-width: 1100px;
-
             margin: 40px auto;
-
             padding: 20px;
-
         }
-
 
         .faction {
-
             background-color: #111111;
-
             border: 2px solid #333333;
-
             border-radius: 12px;
-
             padding: 25px;
-
         }
-
 
         .limbeck {
-
             border-color: green;
-
         }
-
 
         .laurence {
-
             border-color: yellow;
-
         }
-
 
         .moody {
-
             border-color: blue;
-
         }
-
 
         .murry {
-
             border-color: red;
-
         }
-
 
         .points {
-
             font-size: 45px;
-
             font-weight: bold;
-
             margin: 15px 0;
-
         }
-
 
         .milestones {
-
             background-color: #111111;
-
             max-width: 700px;
-
             margin: 30px auto;
-
             padding: 20px;
-
             border-radius: 10px;
-
         }
-
 
         .milestones p {
-
             margin: 12px;
-
         }
-
 
         .teacher-link {
-
             display: inline-block;
-
             margin: 25px;
-
             color: cyan;
-
             text-decoration: none;
-
         }
-
 
         footer {
-
             background-color: #000030;
-
             padding: 12px;
-
             margin-top: 40px;
-
         }
-
 
         @media (max-width: 800px) {
 
             .factions {
-
-                grid-template-columns:
-                    repeat(2, 1fr);
-
+                grid-template-columns: repeat(2, 1fr);
             }
 
         }
 
-
         @media (max-width: 500px) {
 
             .factions {
-
                 grid-template-columns: 1fr;
-
             }
 
         }
@@ -201,16 +124,10 @@
 
 
     <p class="subtitle">
-
         🗑️ 1 Piece of Rubbish =
-        <b>2 Points</b>
-
+        <b>1 Point</b>
     </p>
 
-
-    <!-- =====================================
-         FACTIONS
-    ====================================== -->
 
     <div class="factions">
 
@@ -230,12 +147,9 @@
                 0
             </div>
 
-            <p>
-                Points
-            </p>
+            <p>Points</p>
 
         </div>
-
 
 
         <!-- LAURENCE -->
@@ -253,12 +167,9 @@
                 0
             </div>
 
-            <p>
-                Points
-            </p>
+            <p>Points</p>
 
         </div>
-
 
 
         <!-- MOODY -->
@@ -276,12 +187,9 @@
                 0
             </div>
 
-            <p>
-                Points
-            </p>
+            <p>Points</p>
 
         </div>
-
 
 
         <!-- MURRY -->
@@ -299,9 +207,7 @@
                 0
             </div>
 
-            <p>
-                Points
-            </p>
+            <p>Points</p>
 
         </div>
 
@@ -309,23 +215,16 @@
     </div>
 
 
-
-    <!-- =====================================
-         MILESTONES
-    ====================================== -->
-
     <div class="milestones">
 
         <h2>
             🏆 Milestones
         </h2>
 
-
         <p>
             » <b>1000 Points:</b>
             Icy Poles for whole faction.
         </p>
-
 
         <p>
             » <b>2000 Points:</b>
@@ -333,27 +232,20 @@
             for the faction.
         </p>
 
-
         <p>
-            » <b>3000 Points:</b> Froyo for whole faction.
+            » <b>3000 Points:</b> .
         </p>
 
-
         <p>
-            » <b>4000 Points:</b> 30 min extra time for recess or lunch
-            for the faction.
+            » <b>4000 Points:</b> .
         </p>
 
-
         <p>
-            » <b>5000 Points:</b> $0.50 for everyone in the faction.
+            » <b>5000 Points:</b> .
         </p>
 
     </div>
 
-
-
-    <!-- TEACHER LOGIN -->
 
     <a
         class="teacher-link"
@@ -361,7 +253,6 @@
     >
         🔒 Teacher Login
     </a>
-
 
 
     <footer>
@@ -373,19 +264,12 @@
     </footer>
 
 
-
-    <!-- =====================================
-         SUPABASE
-    ====================================== -->
-
     <script
         src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
     ></script>
 
-
-    <!-- MAIN JS -->
-
     <script src="main.js"></script>
+
 
 </body>
 
