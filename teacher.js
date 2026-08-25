@@ -145,15 +145,9 @@ async function login() {
 
 function showTeacherPanel(user) {
 
-    document.getElementById(
-        "loginScreen"
-    ).style.display = "none";
+    document.getElementById("loginScreen").style.display = "none";
 
-
-    document.getElementById(
-        "teacherPanel"
-    ).style.display = "block";
-
+    document.getElementById("teacherPanel").style.display = "block";
 
     loadPoints();
 
