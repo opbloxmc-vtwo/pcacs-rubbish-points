@@ -657,6 +657,7 @@ async function changePoints(faction, amount) {
 
                     teacher_email:
                         user.email,
+                        teacher_name: currentProfile?.display_name || user.email,
 
                     action:
                         actualChange > 0
@@ -831,6 +832,7 @@ async function resetFaction(faction) {
 
                 teacher_email:
                     user.email,
+                    teacher_name: currentProfile?.display_name || user.email,
 
                 action:
                     "RESET",
