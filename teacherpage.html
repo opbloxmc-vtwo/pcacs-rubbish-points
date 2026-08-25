@@ -2,16 +2,11 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Teacher Control Panel</title>
-
 
     <style>
 
@@ -19,533 +14,422 @@
             box-sizing: border-box;
         }
 
-
         body {
-
             background-color: #111111;
-
             color: white;
-
             font-family: Arial, sans-serif;
-
             text-align: center;
-
             margin: 0;
-
         }
 
-
-        /* =====================================
+        /* =========================
            LOGIN
-        ====================================== */
+        ========================= */
 
         #loginScreen {
-
             max-width: 450px;
-
             margin: 100px auto;
-
             padding: 35px;
-
             background-color: #222222;
-
             border-radius: 15px;
-
         }
-
 
         #loginScreen input {
-
             width: 90%;
-
             padding: 13px;
-
             margin: 8px;
-
             border: none;
-
             border-radius: 6px;
-
             font-size: 16px;
-
         }
-
 
         .loginButton {
-
             background-color: #168a2a;
-
             color: white;
-
             padding: 13px 30px;
-
             border: none;
-
             border-radius: 6px;
-
             font-size: 16px;
-
             cursor: pointer;
-
         }
 
-
-        #error {
-
-            color: #ff4444;
-
-            font-weight: bold;
-
-        }
-
-
-        /* =====================================
+        /* =========================
            PANEL
-        ====================================== */
+        ========================= */
 
         #teacherPanel {
-
             display: none;
-
-        }
-
-
-        .factions {
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(4, 1fr);
-
-            gap: 20px;
-
-            max-width: 1100px;
-
-            margin: 40px auto;
-
             padding: 20px;
-
         }
 
+        button {
+            border: none;
+            border-radius: 6px;
+            padding: 11px 15px;
+            margin: 5px;
+            font-size: 15px;
+            cursor: pointer;
+        }
 
-        .faction {
+        /* =========================
+           PROFILE
+        ========================= */
 
+        .profile-card {
+            max-width: 800px;
+            margin: 25px auto;
+            padding: 20px;
             background-color: #222222;
-
+            border: 1px solid #444444;
             border-radius: 12px;
 
-            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
 
-            border: 2px solid #444444;
-
+            text-align: left;
         }
 
+        .profile-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #555555;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-info h2 {
+            margin: 0 0 5px 0;
+        }
+
+        .profile-info p {
+            margin: 5px 0;
+        }
+
+        .profile-email {
+            color: #aaaaaa;
+            font-size: 14px;
+        }
+
+        .profile-bio {
+            color: #dddddd;
+            margin-top: 10px !important;
+        }
+
+        .edit-profile-button {
+            background-color: #1976d2;
+            color: white;
+        }
+
+        /* =========================
+           PROFILE EDITOR
+        ========================= */
+
+        .profile-editor {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            z-index: 5000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-editor-box {
+            width: 90%;
+            max-width: 500px;
+            background-color: #222222;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: left;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .profile-editor-box label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .profile-editor-box input,
+        .profile-editor-box textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #555555;
+            background-color: #111111;
+            color: white;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .profile-editor-box textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .save-profile-button {
+            background-color: #168a2a;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .cancel-profile-button {
+            background-color: #555555;
+            color: white;
+            margin-top: 20px;
+        }
+
+        /* =========================
+           FACTIONS
+        ========================= */
+
+        .factions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+
+        .faction {
+            background-color: #222222;
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px solid #444444;
+        }
 
         .limbeck {
             border-color: green;
         }
 
-
         .laurence {
             border-color: yellow;
         }
-
 
         .moody {
             border-color: blue;
         }
 
-
         .murry {
             border-color: red;
         }
 
-
         .points {
-
             font-size: 42px;
-
             font-weight: bold;
-
             margin: 15px;
-
         }
-
-
-        button {
-
-            border: none;
-
-            border-radius: 6px;
-
-            padding: 11px 15px;
-
-            margin: 5px;
-
-            font-size: 15px;
-
-            cursor: pointer;
-
-        }
-
 
         .add {
-
             background-color: green;
-
             color: white;
-
         }
-
 
         .remove {
-
             background-color: red;
-
             color: white;
-
         }
-
 
         .faction-reset {
-
             background-color: #ff9800;
-
-            color: #000000;
-
+            color: black;
             width: 90%;
-
         }
-
 
         .logout {
-
             background-color: #555555;
-
             color: white;
-
         }
 
-
-        /* =====================================
+        /* =========================
            TOASTS
-        ====================================== */
+        ========================= */
 
         #toastContainer {
-
             position: fixed;
-
             top: 20px;
-
             right: 20px;
-
             z-index: 9999;
-
             display: flex;
-
             flex-direction: column;
-
             gap: 10px;
-
         }
-
 
         .toast {
-
             min-width: 280px;
-
             max-width: 380px;
-
             padding: 15px 20px;
-
             background-color: #222222;
-
             color: white;
-
             border-left: 5px solid #4caf50;
-
             border-radius: 8px;
-
-            box-shadow:
-                0 5px 20px rgba(0, 0, 0, 0.5);
-
-            animation:
-                toastIn 0.25s ease;
-
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
             text-align: left;
-
+            animation: toastIn 0.25s ease;
         }
-
 
         .toast.error {
-
             border-left-color: #f44336;
-
         }
-
 
         .toast.warning {
-
             border-left-color: #ff9800;
-
         }
-
 
         .toast-title {
-
             font-weight: bold;
-
             margin-bottom: 4px;
-
         }
-
 
         .toast-message {
-
             color: #cccccc;
-
             font-size: 14px;
-
         }
-
 
         @keyframes toastIn {
-
             from {
-
                 opacity: 0;
-
-                transform:
-                    translateX(30px);
-
+                transform: translateX(30px);
             }
 
             to {
-
                 opacity: 1;
-
-                transform:
-                    translateX(0);
-
+                transform: translateX(0);
             }
-
         }
-
 
         @keyframes toastOut {
-
             from {
-
                 opacity: 1;
-
-                transform:
-                    translateX(0);
-
+                transform: translateX(0);
             }
 
             to {
-
                 opacity: 0;
-
-                transform:
-                    translateX(30px);
-
+                transform: translateX(30px);
             }
-
         }
 
-
-        /* =====================================
+        /* =========================
            LOGS
-        ====================================== */
+        ========================= */
 
         .logs-section {
-
             max-width: 1200px;
-
             margin: 50px auto;
-
-            padding: 20px;
-
         }
-
 
         .log-controls {
-
             display: flex;
-
             justify-content: center;
-
             gap: 10px;
-
             flex-wrap: wrap;
-
             margin-bottom: 20px;
-
         }
-
 
         .log-controls select {
-
             padding: 10px;
-
             background-color: #222222;
-
             color: white;
-
             border: 1px solid #555555;
-
             border-radius: 5px;
-
         }
-
 
         .log-controls button {
-
             background-color: #444444;
-
             color: white;
-
         }
-
 
         .log-table-container {
-
             overflow-x: auto;
-
             background-color: #1a1a1a;
-
             border-radius: 10px;
-
         }
-
 
         .log-table {
-
             width: 100%;
-
             border-collapse: collapse;
-
             min-width: 800px;
-
         }
-
 
         .log-table th {
-
             background-color: #000030;
-
             padding: 12px;
-
         }
-
 
         .log-table td {
-
             padding: 12px;
-
             border-bottom: 1px solid #333333;
-
         }
-
 
         .add-log {
-
             color: #44ff44;
-
             font-weight: bold;
-
         }
-
 
         .remove-log {
-
             color: #ff4444;
-
             font-weight: bold;
-
         }
-
 
         .reset-log {
-
             color: orange;
-
             font-weight: bold;
-
         }
-
 
         .no-logs {
-
             padding: 30px;
-
             color: #aaaaaa;
-
         }
-
 
         .back {
-
             color: cyan;
-
             text-decoration: none;
-
         }
-
 
         @media (max-width: 800px) {
-
             .factions {
-
-                grid-template-columns:
-                    repeat(2, 1fr);
-
+                grid-template-columns: repeat(2, 1fr);
             }
 
+            .profile-card {
+                flex-wrap: wrap;
+            }
         }
 
-
         @media (max-width: 500px) {
-
             .factions {
-
                 grid-template-columns: 1fr;
-
             }
 
+            .profile-card {
+                flex-direction: column;
+                text-align: center;
+            }
         }
 
     </style>
-
 </head>
-
 
 <body>
 
-
-    <!-- =====================================
-         TOAST CONTAINER
-    ====================================== -->
-
+    <!-- TOASTS -->
     <div id="toastContainer"></div>
 
 
-
-    <!-- =====================================
-         LOGIN
-    ====================================== -->
+    <!-- LOGIN -->
 
     <div id="loginScreen">
 
-        <h1>
-            🔒 Teacher Login
-        </h1>
+        <h1>🔒 Teacher Login</h1>
 
-        <p>
-            Sign in with your teacher account.
-        </p>
-
+        <p>Sign in with your teacher account.</p>
 
         <input
             type="email"
@@ -554,7 +438,6 @@
             autocomplete="username"
         >
 
-
         <input
             type="password"
             id="password"
@@ -562,9 +445,7 @@
             autocomplete="current-password"
         >
 
-
         <br>
-
 
         <button
             class="loginButton"
@@ -573,32 +454,130 @@
             Login
         </button>
 
-
-        <p id="error"></p>
-
     </div>
 
 
-
-    <!-- =====================================
-         TEACHER PANEL
-    ====================================== -->
+    <!-- TEACHER PANEL -->
 
     <div id="teacherPanel">
 
-        <h1>
-            🔒 Teacher Points Control Panel
-        </h1>
+        <h1>🔒 Teacher Points Control Panel</h1>
 
 
-        <p>
+        <!-- PROFILE -->
 
-            Logged in as:
-            <b id="teacherEmail"></b>
+        <div class="profile-card">
 
-        </p>
+            <img
+                id="profileAvatar"
+                class="profile-avatar"
+                src="https://placehold.co/120x120?text=Profile"
+                alt="Profile Picture"
+            >
+
+            <div class="profile-info">
+
+                <h2 id="profileDisplayName">
+                    Loading...
+                </h2>
+
+                <p id="profilePronouns">
+                    Pronouns not set
+                </p>
+
+                <p
+                    class="profile-email"
+                    id="profileEmail"
+                ></p>
+
+                <p
+                    class="profile-bio"
+                    id="profileBio"
+                ></p>
+
+            </div>
+
+            <button
+                class="edit-profile-button"
+                onclick="openProfileEditor()"
+            >
+                ✏️ Edit Profile
+            </button>
+
+        </div>
 
 
+        <!-- PROFILE EDITOR -->
+
+        <div
+            id="profileEditor"
+            class="profile-editor"
+        >
+
+            <div class="profile-editor-box">
+
+                <h2>✏️ Edit Profile</h2>
+
+                <label>Display Name</label>
+
+                <input
+                    type="text"
+                    id="editDisplayName"
+                    placeholder="Your display name"
+                    maxlength="50"
+                >
+
+
+                <label>Pronouns</label>
+
+                <input
+                    type="text"
+                    id="editPronouns"
+                    placeholder="e.g. he/him, she/her, they/them"
+                    maxlength="30"
+                >
+
+
+                <label>Profile Picture URL</label>
+
+                <input
+                    type="url"
+                    id="editAvatarUrl"
+                    placeholder="https://example.com/profile.png"
+                >
+
+
+                <label>About Me</label>
+
+                <textarea
+                    id="editBio"
+                    placeholder="Tell us a little about yourself..."
+                    maxlength="300"
+                ></textarea>
+
+
+                <br>
+
+                <button
+                    class="save-profile-button"
+                    onclick="saveProfile()"
+                >
+                    💾 Save Profile
+                </button>
+
+                <button
+                    class="cancel-profile-button"
+                    onclick="closeProfileEditor()"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- FACTIONS -->
 
         <div class="factions">
 
@@ -607,10 +586,7 @@
 
             <div class="faction limbeck">
 
-                <h2 style="color: green;">
-                    Limbeck
-                </h2>
-
+                <h2 style="color: green;">Limbeck</h2>
 
                 <div
                     class="points"
@@ -619,14 +595,12 @@
                     0
                 </div>
 
-
                 <button
                     class="add"
                     onclick="changePoints('limbeck', 1)"
                 >
                     +1 Point
                 </button>
-
 
                 <button
                     class="remove"
@@ -635,9 +609,7 @@
                     -1 Point
                 </button>
 
-
                 <br>
-
 
                 <button
                     class="faction-reset"
@@ -649,15 +621,11 @@
             </div>
 
 
-
             <!-- LAURENCE -->
 
             <div class="faction laurence">
 
-                <h2 style="color: yellow;">
-                    Laurence
-                </h2>
-
+                <h2 style="color: yellow;">Laurence</h2>
 
                 <div
                     class="points"
@@ -666,14 +634,12 @@
                     0
                 </div>
 
-
                 <button
                     class="add"
                     onclick="changePoints('laurence', 1)"
                 >
                     +1 Point
                 </button>
-
 
                 <button
                     class="remove"
@@ -682,9 +648,7 @@
                     -1 Point
                 </button>
 
-
                 <br>
-
 
                 <button
                     class="faction-reset"
@@ -696,15 +660,11 @@
             </div>
 
 
-
             <!-- MOODY -->
 
             <div class="faction moody">
 
-                <h2 style="color: blue;">
-                    Moody
-                </h2>
-
+                <h2 style="color: blue;">Moody</h2>
 
                 <div
                     class="points"
@@ -713,14 +673,12 @@
                     0
                 </div>
 
-
                 <button
                     class="add"
                     onclick="changePoints('moody', 1)"
                 >
                     +1 Point
                 </button>
-
 
                 <button
                     class="remove"
@@ -729,9 +687,7 @@
                     -1 Point
                 </button>
 
-
                 <br>
-
 
                 <button
                     class="faction-reset"
@@ -743,15 +699,11 @@
             </div>
 
 
-
             <!-- MURRY -->
 
             <div class="faction murry">
 
-                <h2 style="color: red;">
-                    Murry
-                </h2>
-
+                <h2 style="color: red;">Murry</h2>
 
                 <div
                     class="points"
@@ -760,14 +712,12 @@
                     0
                 </div>
 
-
                 <button
                     class="add"
                     onclick="changePoints('murry', 1)"
                 >
                     +1 Point
                 </button>
-
 
                 <button
                     class="remove"
@@ -776,9 +726,7 @@
                     -1 Point
                 </button>
 
-
                 <br>
-
 
                 <button
                     class="faction-reset"
@@ -789,66 +737,34 @@
 
             </div>
 
-
         </div>
 
 
-
-        <!-- =====================================
-             LOGS
-        ====================================== -->
+        <!-- LOGS -->
 
         <div class="logs-section">
 
-            <h2>
-                📋 Points Activity Log
-            </h2>
-
+            <h2>📋 Points Activity Log</h2>
 
             <div class="log-controls">
 
                 <select id="logFaction">
 
-                    <option value="all">
-                        All Factions
-                    </option>
-
-                    <option value="limbeck">
-                        Limbeck
-                    </option>
-
-                    <option value="laurence">
-                        Laurence
-                    </option>
-
-                    <option value="moody">
-                        Moody
-                    </option>
-
-                    <option value="murry">
-                        Murry
-                    </option>
+                    <option value="all">All Factions</option>
+                    <option value="limbeck">Limbeck</option>
+                    <option value="laurence">Laurence</option>
+                    <option value="moody">Moody</option>
+                    <option value="murry">Murry</option>
 
                 </select>
 
 
                 <select id="logAction">
 
-                    <option value="all">
-                        All Actions
-                    </option>
-
-                    <option value="ADD_POINTS">
-                        Added Points
-                    </option>
-
-                    <option value="REMOVE_POINTS">
-                        Removed Points
-                    </option>
-
-                    <option value="RESET">
-                        Resets
-                    </option>
+                    <option value="all">All Actions</option>
+                    <option value="ADD_POINTS">Added Points</option>
+                    <option value="REMOVE_POINTS">Removed Points</option>
+                    <option value="RESET">Resets</option>
 
                 </select>
 
@@ -865,39 +781,26 @@
                 <table class="log-table">
 
                     <thead>
-
                         <tr>
-
                             <th>Date / Time</th>
-
                             <th>Teacher</th>
-
                             <th>Action</th>
-
                             <th>Faction</th>
-
                             <th>Change</th>
-
                             <th>Before</th>
-
                             <th>After</th>
-
                         </tr>
-
                     </thead>
-
 
                     <tbody id="logsBody">
 
                         <tr>
-
                             <td
                                 colspan="7"
                                 class="no-logs"
                             >
                                 Loading logs...
                             </td>
-
                         </tr>
 
                     </tbody>
@@ -909,7 +812,6 @@
         </div>
 
 
-
         <button
             class="logout"
             onclick="logout()"
@@ -917,10 +819,8 @@
             Logout
         </button>
 
-
         <br>
         <br>
-
 
         <a
             class="back"
@@ -932,16 +832,13 @@
     </div>
 
 
+    <!-- SCRIPTS -->
 
-    <script
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-    ></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script src="main.js"></script>
 
     <script src="teacher.js"></script>
-
 
 </body>
 
