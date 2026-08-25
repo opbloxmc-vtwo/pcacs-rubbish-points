@@ -145,18 +145,25 @@ async function login() {
 
 function showTeacherPanel(user) {
 
-    document.getElementById("loginScreen").style.display = "none";
+    const loginScreen =
+        document.getElementById("loginScreen");
 
-    document.getElementById("teacherPanel").style.display = "block";
+    const teacherPanel =
+        document.getElementById("teacherPanel");
 
+    if (loginScreen) {
+        loginScreen.style.display = "none";
+    }
+
+    if (teacherPanel) {
+        teacherPanel.style.display = "block";
+    }
+
+    // Load dashboard data
     loadPoints();
-
     loadLogs();
-
     loadProfile();
-
 }
-
 
 // ============================================
 // CHECK LOGIN
