@@ -1052,7 +1052,11 @@ async function loadLogs() {
             </td>
 
             <td>
-                ${escapeHtml(log.teacher_email)}
+                ${escapeHtml(
+                    log.teacher_name ||
+                    log.teacher_email ||
+                    "Unknown"
+                )}
             </td>
 
             <td class="${actionClass}">
