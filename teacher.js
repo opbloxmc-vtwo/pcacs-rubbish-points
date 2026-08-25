@@ -2,29 +2,18 @@
 // TOAST SYSTEM
 // ============================================
 
-function showToast(
-    title,
-    message,
-    type = "success",
-    duration = 3500
-) {
+function showToast(title, message, type = "success", duration = 3500) {
 
     const container =
-        document.getElementById(
-            "toastContainer"
-        );
-
+        document.getElementById("toastContainer");
 
     const toast =
         document.createElement("div");
 
-
     toast.className =
         "toast " + type;
 
-
     toast.innerHTML = `
-
         <div class="toast-title">
             ${escapeHtml(title)}
         </div>
@@ -32,20 +21,17 @@ function showToast(
         <div class="toast-message">
             ${escapeHtml(message)}
         </div>
-
     `;
-
 
     container.appendChild(toast);
 
 
-    setTimeout(function() {
+    setTimeout(function () {
 
         toast.style.animation =
             "toastOut 0.25s ease";
 
-
-        setTimeout(function() {
+        setTimeout(function () {
 
             toast.remove();
 
@@ -55,6 +41,35 @@ function showToast(
 
 }
 
+
+// ============================================
+// ESCAPE HTML
+// ============================================
+
+function escapeHtml(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+// ============================================
+// PROFILE SYSTEM
+// ============================================
+
+let currentProfile = null;
 
 
 // ============================================
@@ -69,18 +84,10 @@ async function login() {
             .value
             .trim();
 
-
     const password =
         document
             .getElementById("password")
             .value;
-
-
-    const errorElement =
-        document.getElementById("error");
-
-
-    errorElement.textContent = "";
 
 
     if (!email || !password) {
@@ -102,11 +109,8 @@ async function login() {
     } =
         await supabaseClient.auth
             .signInWithPassword({
-
                 email: email,
-
                 password: password
-
             });
 
 
@@ -130,16 +134,13 @@ async function login() {
     );
 
 
-    showTeacherPanel(
-        data.user
-    );
+    showTeacherPanel(data.user);
 
 }
 
 
-
 // ============================================
-// SHOW PANEL
+// SHOW TEACHER PANEL
 // ============================================
 
 function showTeacherPanel(user) {
@@ -154,18 +155,13 @@ function showTeacherPanel(user) {
     ).style.display = "block";
 
 
-    document.getElementById(
-        "teacherEmail"
-    ).textContent =
-        user.email;
-
-
     loadPoints();
 
     loadLogs();
 
-}
+    loadProfile();
 
+}
 
 
 // ============================================
@@ -192,7 +188,6 @@ async function checkLogin() {
 }
 
 
-
 // ============================================
 // LOGOUT
 // ============================================
@@ -217,6 +212,9 @@ async function logout() {
     ).value = "";
 
 
+    currentProfile = null;
+
+
     showToast(
         "Logged Out",
         "You have been logged out.",
@@ -226,15 +224,333 @@ async function logout() {
 }
 
 
+// ============================================
+// LOAD PROFILE
+// ============================================
+
+async function loadProfile() {
+
+    const {
+        data: {
+            user
+        }
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (!user) return;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select("*")
+            .eq("id", user.id)
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Failed to load profile:",
+            error
+        );
+
+        showToast(
+            "Profile Error",
+            "Could not load your profile.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!data) {
+
+        currentProfile = {
+            id: user.id,
+            display_name: "",
+            pronouns: "",
+            avatar_url: "",
+            bio: ""
+        };
+
+
+        const {
+            error: insertError
+        } =
+            await supabaseClient
+                .from("profiles")
+                .insert(currentProfile);
+
+
+        if (insertError) {
+
+            console.error(
+                "Failed to create profile:",
+                insertError
+            );
+
+        }
+
+    } else {
+
+        currentProfile = data;
+
+    }
+
+
+    updateProfileDisplay(user);
+
+}
+
+
+// ============================================
+// UPDATE PROFILE DISPLAY
+// ============================================
+
+function updateProfileDisplay(user) {
+
+    const displayName =
+        currentProfile.display_name ||
+        user.email.split("@")[0];
+
+
+    document.getElementById(
+        "profileDisplayName"
+    ).textContent =
+        displayName;
+
+
+    document.getElementById(
+        "profilePronouns"
+    ).textContent =
+        currentProfile.pronouns ||
+        "Pronouns not set";
+
+
+    document.getElementById(
+        "profileEmail"
+    ).textContent =
+        user.email;
+
+
+    document.getElementById(
+        "profileBio"
+    ).textContent =
+        currentProfile.bio || "";
+
+
+    const avatar =
+        document.getElementById(
+            "profileAvatar"
+        );
+
+
+    if (currentProfile.avatar_url) {
+
+        avatar.src =
+            currentProfile.avatar_url;
+
+    } else {
+
+        avatar.src =
+            "https://placehold.co/120x120?text=Profile";
+
+    }
+
+
+    avatar.onerror = function () {
+
+        avatar.src =
+            "https://placehold.co/120x120?text=Profile";
+
+    };
+
+}
+
+
+// ============================================
+// OPEN PROFILE EDITOR
+// ============================================
+
+function openProfileEditor() {
+
+    if (!currentProfile) {
+
+        showToast(
+            "Profile Loading",
+            "Please wait for your profile to load.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "editDisplayName"
+    ).value =
+        currentProfile.display_name || "";
+
+
+    document.getElementById(
+        "editPronouns"
+    ).value =
+        currentProfile.pronouns || "";
+
+
+    document.getElementById(
+        "editAvatarUrl"
+    ).value =
+        currentProfile.avatar_url || "";
+
+
+    document.getElementById(
+        "editBio"
+    ).value =
+        currentProfile.bio || "";
+
+
+    document.getElementById(
+        "profileEditor"
+    ).style.display =
+        "flex";
+
+}
+
+
+// ============================================
+// CLOSE PROFILE EDITOR
+// ============================================
+
+function closeProfileEditor() {
+
+    document.getElementById(
+        "profileEditor"
+    ).style.display =
+        "none";
+
+}
+
+
+// ============================================
+// SAVE PROFILE
+// ============================================
+
+async function saveProfile() {
+
+    const {
+        data: {
+            user
+        }
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (!user) {
+
+        showToast(
+            "Error",
+            "You must be logged in.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const displayName =
+        document
+            .getElementById("editDisplayName")
+            .value
+            .trim();
+
+
+    const pronouns =
+        document
+            .getElementById("editPronouns")
+            .value
+            .trim();
+
+
+    const avatarUrl =
+        document
+            .getElementById("editAvatarUrl")
+            .value
+            .trim();
+
+
+    const bio =
+        document
+            .getElementById("editBio")
+            .value
+            .trim();
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .upsert({
+                id: user.id,
+                display_name: displayName,
+                pronouns: pronouns,
+                avatar_url: avatarUrl,
+                bio: bio,
+                updated_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+
+
+    if (error) {
+
+        console.error(error);
+
+        showToast(
+            "Profile Error",
+            error.message,
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    currentProfile = data;
+
+
+    updateProfileDisplay(user);
+
+
+    closeProfileEditor();
+
+
+    showToast(
+        "Profile Saved",
+        "Your profile has been updated!",
+        "success"
+    );
+
+}
+
 
 // ============================================
 // CHANGE POINTS
 // ============================================
 
-async function changePoints(
-    faction,
-    amount
-) {
+async function changePoints(faction, amount) {
 
     const {
         data: {
@@ -309,9 +625,7 @@ async function changePoints(
         await supabaseClient
             .from("factions")
             .update({
-
                 points: newPoints
-
             })
             .eq("name", faction);
 
@@ -331,60 +645,60 @@ async function changePoints(
     }
 
 
-    // ========================================
-    // LOG
-    // ========================================
+    if (actualChange !== 0) {
 
-    const {
-        error: logError
-    } =
-        await supabaseClient
-            .from("point_logs")
-            .insert({
+        const {
+            error: logError
+        } =
+            await supabaseClient
+                .from("point_logs")
+                .insert({
 
-                teacher_email:
-                    user.email,
+                    teacher_email:
+                        user.email,
 
-                action:
-                    actualChange >= 0
-                        ? "ADD_POINTS"
-                        : "REMOVE_POINTS",
+                    action:
+                        actualChange > 0
+                            ? "ADD_POINTS"
+                            : "REMOVE_POINTS",
 
-                faction:
-                    faction,
+                    faction:
+                        faction,
 
-                points_change:
-                    actualChange,
+                    points_change:
+                        actualChange,
 
-                points_before:
-                    pointsBefore,
+                    points_before:
+                        pointsBefore,
 
-                points_after:
-                    newPoints
+                    points_after:
+                        newPoints
 
-            });
+                });
 
 
-    if (logError) {
+        if (logError) {
 
-        console.error(
-            "Logging failed:",
-            logError
-        );
+            console.error(
+                "Logging failed:",
+                logError
+            );
+
+        }
 
     }
 
 
     const factionDisplay =
-        faction.charAt(0).toUpperCase()
-        + faction.slice(1);
+        faction.charAt(0).toUpperCase() +
+        faction.slice(1);
 
 
     if (actualChange > 0) {
 
         showToast(
             "Points Added",
-            `${factionDisplay} received +${actualChange} point${actualChange === 1 ? "" : "s"}.`,
+            `${factionDisplay} received +${actualChange} point.`,
             "success"
         );
 
@@ -392,7 +706,7 @@ async function changePoints(
 
         showToast(
             "Points Removed",
-            `${factionDisplay} lost ${Math.abs(actualChange)} point${Math.abs(actualChange) === 1 ? "" : "s"}.`,
+            `${factionDisplay} lost ${Math.abs(actualChange)} point.`,
             "warning"
         );
 
@@ -414,14 +728,11 @@ async function changePoints(
 }
 
 
-
 // ============================================
-// RESET ONE FACTION
+// RESET FACTION
 // ============================================
 
-async function resetFaction(
-    faction
-) {
+async function resetFaction(faction) {
 
     const {
         data: {
@@ -445,8 +756,6 @@ async function resetFaction(
     }
 
 
-    // Get current points
-
     const {
         data,
         error
@@ -459,8 +768,6 @@ async function resetFaction(
 
 
     if (error) {
-
-        console.error(error);
 
         showToast(
             "Error",
@@ -477,8 +784,6 @@ async function resetFaction(
         data.points;
 
 
-    // Nothing to reset
-
     if (pointsBefore === 0) {
 
         showToast(
@@ -492,24 +797,18 @@ async function resetFaction(
     }
 
 
-    // Reset
-
     const {
         error: updateError
     } =
         await supabaseClient
             .from("factions")
             .update({
-
                 points: 0
-
             })
             .eq("name", faction);
 
 
     if (updateError) {
-
-        console.error(updateError);
 
         showToast(
             "Reset Failed",
@@ -521,10 +820,6 @@ async function resetFaction(
 
     }
 
-
-    // ========================================
-    // LOG RESET
-    // ========================================
 
     const {
         error: logError
@@ -565,8 +860,8 @@ async function resetFaction(
 
 
     const factionDisplay =
-        faction.charAt(0).toUpperCase()
-        + faction.slice(1);
+        faction.charAt(0).toUpperCase() +
+        faction.slice(1);
 
 
     showToast(
@@ -583,7 +878,6 @@ async function resetFaction(
 }
 
 
-
 // ============================================
 // LOAD LOGS
 // ============================================
@@ -591,28 +885,18 @@ async function resetFaction(
 async function loadLogs() {
 
     const logsBody =
-        document.getElementById(
-            "logsBody"
-        );
+        document.getElementById("logsBody");
 
 
-    if (!logsBody) {
-
-        return;
-
-    }
+    if (!logsBody) return;
 
 
     const factionFilter =
-        document.getElementById(
-            "logFaction"
-        ).value;
+        document.getElementById("logFaction").value;
 
 
     const actionFilter =
-        document.getElementById(
-            "logAction"
-        ).value;
+        document.getElementById("logAction").value;
 
 
     let query =
@@ -662,18 +946,11 @@ async function loadLogs() {
         console.error(error);
 
         logsBody.innerHTML = `
-
             <tr>
-
-                <td
-                    colspan="7"
-                    class="no-logs"
-                >
+                <td colspan="7" class="no-logs">
                     ❌ Failed to load logs.
                 </td>
-
             </tr>
-
         `;
 
         return;
@@ -684,18 +961,11 @@ async function loadLogs() {
     if (!data || data.length === 0) {
 
         logsBody.innerHTML = `
-
             <tr>
-
-                <td
-                    colspan="7"
-                    class="no-logs"
-                >
+                <td colspan="7" class="no-logs">
                     No logs found.
                 </td>
-
             </tr>
-
         `;
 
         return;
@@ -706,16 +976,14 @@ async function loadLogs() {
     logsBody.innerHTML = "";
 
 
-    data.forEach(function(log) {
+    data.forEach(function (log) {
 
         const row =
             document.createElement("tr");
 
 
         const date =
-            new Date(
-                log.created_at
-            );
+            new Date(log.created_at);
 
 
         const formattedDate =
@@ -729,10 +997,7 @@ async function loadLogs() {
         let actionClass = "";
 
 
-        if (
-            log.action ===
-            "ADD_POINTS"
-        ) {
+        if (log.action === "ADD_POINTS") {
 
             actionText =
                 "➕ Added Points";
@@ -743,10 +1008,7 @@ async function loadLogs() {
         }
 
 
-        if (
-            log.action ===
-            "REMOVE_POINTS"
-        ) {
+        if (log.action === "REMOVE_POINTS") {
 
             actionText =
                 "➖ Removed Points";
@@ -757,10 +1019,7 @@ async function loadLogs() {
         }
 
 
-        if (
-            log.action ===
-            "RESET"
-        ) {
+        if (log.action === "RESET") {
 
             actionText =
                 "🔄 Reset";
@@ -790,9 +1049,7 @@ async function loadLogs() {
             </td>
 
             <td>
-                ${escapeHtml(
-                    log.teacher_email
-                )}
+                ${escapeHtml(log.teacher_email)}
             </td>
 
             <td class="${actionClass}">
@@ -800,9 +1057,7 @@ async function loadLogs() {
             </td>
 
             <td>
-                ${escapeHtml(
-                    log.faction || "-"
-                )}
+                ${escapeHtml(log.faction || "-")}
             </td>
 
             <td>
@@ -827,68 +1082,17 @@ async function loadLogs() {
 }
 
 
-
 // ============================================
-// ESCAPE HTML
-// ============================================
-
-function escapeHtml(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return "";
-
-    }
-
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-
-// ============================================
-// ENTER TO LOGIN
+// ENTER KEY LOGIN
 // ============================================
 
 document
     .getElementById("password")
     .addEventListener(
         "keydown",
-        function(event) {
+        function (event) {
 
-            if (
-                event.key ===
-                "Enter"
-            ) {
+            if (event.key === "Enter") {
 
                 login();
 
@@ -896,7 +1100,6 @@ document
 
         }
     );
-
 
 
 // ============================================
