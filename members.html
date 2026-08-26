@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Members</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #111;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background: #000030;
+    text-align: center;
+    padding: 35px 20px;
+}
+
+header h1 {
+    margin: 0;
+}
+
+header p {
+    color: #aaa;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 40px 20px;
+}
+
+.members {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(330px, 1fr));
+    gap: 20px;
+}
+
+.member {
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 15px;
+    padding: 25px;
+
+    display: flex;
+    gap: 20px;
+
+    transition: 0.2s;
+}
+
+.member:hover {
+    transform: translateY(-3px);
+    border-color: #777;
+}
+
+.avatar {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #555;
+    flex-shrink: 0;
+}
+
+.member-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.member-name {
+    margin: 0;
+    font-size: 22px;
+}
+
+.pronouns {
+    color: #999;
+    margin-top: 4px;
+}
+
+.bio {
+    color: #ccc;
+    margin-top: 12px;
+    line-height: 1.5;
+}
+
+.role {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: #333;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.role-admin {
+    background: #6b1b1b;
+    color: #ffaaaa;
+}
+
+.role-tester {
+    background: #604d00;
+    color: #ffe477;
+}
+
+.role-teacher {
+    background: #174d2b;
+    color: #91e9aa;
+}
+
+.tags,
+.badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.tag,
+.badge {
+    background: #333;
+    border: 1px solid #555;
+    padding: 4px 8px;
+    border-radius: 15px;
+    font-size: 12px;
+}
+
+.loading,
+.empty,
+.error {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px;
+    color: #aaa;
+}
+
+.error {
+    color: #ff6666;
+}
+
+.back {
+    display: inline-block;
+    margin-top: 30px;
+    color: #5ebcff;
+    text-decoration: none;
+}
+
+footer {
+    margin-top: 50px;
+    padding: 25px;
+    background: #000030;
+    text-align: center;
+    color: #aaa;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>Members</h1>
+
+<p>
+Admins, Testers & Teachers
+</p>
+
+</header>
+
+
+<main class="container">
+
+<div
+id="members"
+class="members"
+>
+
+<div class="loading">
+Loading members...
+</div>
+
+</div>
+
+
+<a
+href="index.html"
+class="back"
+>
+← Back to Scoreboard
+</a>
+
+</main>
+
+
+<footer>
+
+&copy; 2026 Ben Rodda
+
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="members.js"></script>
+
+</body>
+
+</html>

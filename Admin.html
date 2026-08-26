@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Admin Dashboard</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #0d0d0d;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.header {
+    background: #09091f;
+    border-bottom: 1px solid #29294a;
+    padding: 18px 30px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.container {
+    max-width: 1300px;
+    margin: auto;
+    padding: 30px;
+}
+
+.card {
+    background: #171717;
+    border: 1px solid #303030;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+.card h2 {
+    margin-top: 0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(280px, 1fr));
+
+    gap: 15px;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    background: #0d0d0d;
+    border: 1px solid #3a3a3a;
+    color: white;
+    padding: 11px;
+    border-radius: 7px;
+}
+
+label {
+    display: block;
+    color: #aaa;
+    margin-bottom: 6px;
+    font-size: 13px;
+}
+
+.button {
+    border: none;
+    border-radius: 7px;
+    padding: 10px 15px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.primary {
+    background: #315bdc;
+}
+
+.danger {
+    background: #8b2d2d;
+}
+
+.success {
+    background: #287a47;
+}
+
+.secondary {
+    background: #303030;
+}
+
+.warning {
+    background: #876d19;
+}
+
+.button:hover {
+    filter: brightness(1.15);
+}
+
+.member {
+    background: #101010;
+    border: 1px solid #303030;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+.member-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.member-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.member-name {
+    font-weight: bold;
+}
+
+.member-email {
+    color: #777;
+    font-size: 12px;
+}
+
+.badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.badge {
+    background: #4d3c12;
+    border: 1px solid #8b7020;
+    color: #ffe994;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.tag {
+    background: #25254d;
+    border: 1px solid #3b3b73;
+    color: #c4c4ff;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.log {
+    border-bottom: 1px solid #2c2c2c;
+    padding: 12px 0;
+}
+
+.log:last-child {
+    border-bottom: none;
+}
+
+.log-action {
+    font-weight: bold;
+}
+
+.log-meta {
+    color: #777;
+    font-size: 12px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#toastContainer {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 9999;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    background: #222;
+    border: 1px solid #444;
+    border-left: 4px solid #5d83ff;
+    padding: 14px 18px;
+    border-radius: 8px;
+    min-width: 280px;
+}
+
+.toast-success {
+    border-left-color: #4caf70;
+}
+
+.toast-error {
+    border-left-color: #e05555;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="header">
+
+<h1>Admin Dashboard</h1>
+
+<button id="logoutButton"
+        class="button secondary">
+Logout
+</button>
+
+</header>
+
+
+<main class="container">
+
+
+<!-- USERS -->
+
+<section class="card">
+
+<h2>Manage Members</h2>
+
+<p style="color:#777;">
+Manage teacher roles and access.
+</p>
+
+<div id="members">
+Loading members...
+</div>
+
+</section>
+
+
+<!-- BADGES -->
+
+<section class="card">
+
+<h2>Manage Badges</h2>
+
+<div class="grid">
+
+<div>
+
+<label>Badge Name</label>
+
+<input id="badgeName"
+       placeholder="e.g. Rubbish Hero">
+
+</div>
+
+<div>
+
+<label>Icon</label>
+
+<input id="badgeIcon"
+       placeholder="🏆">
+
+</div>
+
+<div>
+
+<label>Description</label>
+
+<input id="badgeDescription"
+       placeholder="Awarded for...">
+
+</div>
+
+</div>
+
+<br>
+
+<button id="createBadgeButton"
+        class="button success">
+Create Badge
+</button>
+
+<div id="badges"
+     style="margin-top:20px;">
+Loading badges...
+</div>
+
+</section>
+
+
+<!-- TAGS -->
+
+<section class="card">
+
+<h2>Manage Tags</h2>
+
+<div class="grid">
+
+<div>
+
+<label>Tag Name</label>
+
+<input id="tagName"
+       placeholder="English">
+
+</div>
+
+<div>
+
+<label>Description</label>
+
+<input id="tagDescription"
+       placeholder="English teacher">
+
+</div>
+
+</div>
+
+<br>
+
+<button id="createTagButton"
+        class="button success">
+Create Tag
+</button>
+
+<div id="tags"
+     style="margin-top:20px;">
+Loading tags...
+</div>
+
+</section>
+
+
+<!-- BADGE ASSIGNMENT -->
+
+<section class="card">
+
+<h2>Give Badge</h2>
+
+<div class="grid">
+
+<div>
+
+<label>User</label>
+
+<select id="badgeUser">
+<option>Loading...</option>
+</select>
+
+</div>
+
+<div>
+
+<label>Badge</label>
+
+<select id="badgeSelect">
+<option>Loading...</option>
+</select>
+
+</div>
+
+</div>
+
+<br>
+
+<button id="giveBadgeButton"
+        class="button primary">
+Give Badge
+</button>
+
+</section>
+
+
+<!-- AUDIT LOG -->
+
+<section class="card">
+
+<h2>Audit Log</h2>
+
+<button id="refreshLogs"
+        class="button secondary">
+Refresh Logs
+</button>
+
+<div id="logs"
+     style="margin-top:15px;">
+Loading logs...
+</div>
+
+</section>
+
+
+<div style="margin-top:20px;">
+
+<a href="teacherpage.html">
+<button class="button secondary">
+← Back to Teacher Portal
+</button>
+</a>
+
+</div>
+
+</main>
+
+
+<div id="toastContainer"></div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="Admin.js"></script>
+
+</body>
+</html>

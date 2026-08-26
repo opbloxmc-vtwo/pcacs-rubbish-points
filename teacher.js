@@ -1,50 +1,72 @@
-// ============================================
-// TOAST SYSTEM
-// ============================================
+const SUPABASE_URL =
+    "https://pozzgdgkqnspksidixkv.supabase.co";
 
-function showToast(title, message, type = "success", duration = 3500) {
+const SUPABASE_KEY =
+    "sb_publishable_nHzAUpD33rmZTKttdzwDgg_Q7Cy6QZq";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+const DEFAULT_AVATAR =
+    "https://placehold.co/200x200?text=User";
+
+let currentUser = null;
+let currentProfile = null;
+
+let availableTags = [];
+let selectedTagIds = [];
+
+const FACTIONS = [
+    "limbeck",
+    "laurence",
+    "moody",
+    "murry"
+];
+
+
+// ========================================================
+// TOASTS
+// ========================================================
+
+function showToast(message, type = "info") {
 
     const container =
         document.getElementById("toastContainer");
+
+    if (!container) {
+        return;
+    }
 
     const toast =
         document.createElement("div");
 
     toast.className =
-        "toast " + type;
+        `toast toast-${type}`;
 
-    toast.innerHTML = `
-        <div class="toast-title">
-            ${escapeHtml(title)}
-        </div>
-
-        <div class="toast-message">
-            ${escapeHtml(message)}
-        </div>
-    `;
+    toast.textContent =
+        message;
 
     container.appendChild(toast);
 
+    setTimeout(() => {
 
-    setTimeout(function () {
+        toast.style.opacity = "0";
 
-        toast.style.animation =
-            "toastOut 0.25s ease";
+        setTimeout(
+            () => toast.remove(),
+            200
+        );
 
-        setTimeout(function () {
-
-            toast.remove();
-
-        }, 250);
-
-    }, duration);
-
+    }, 4000);
 }
 
 
-// ============================================
+// ========================================================
 // ESCAPE HTML
-// ============================================
+// ========================================================
 
 function escapeHtml(value) {
 
@@ -61,113 +83,35 @@ function escapeHtml(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-
 }
 
 
-// ============================================
-// PROFILE SYSTEM
-// ============================================
+// ========================================================
+// ROLE
+// ========================================================
 
-let currentProfile = null;
+function formatRole(role) {
+
+    switch (role) {
+
+        case "admin":
+            return "Admin";
+
+        case "tester":
+            return "Tester";
+
+        case "teacher":
+            return "Teacher";
+
+        default:
+            return "Member";
+    }
+}
 
 
-// ============================================
+// ========================================================
 // LOGIN
-// ============================================
-
-async function login() {
-
-    const email =
-        document
-            .getElementById("email")
-            .value
-            .trim();
-
-    const password =
-        document
-            .getElementById("password")
-            .value;
-
-
-    if (!email || !password) {
-
-        showToast(
-            "Login Failed",
-            "Please enter your email and password.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient.auth
-            .signInWithPassword({
-                email: email,
-                password: password
-            });
-
-
-    if (error) {
-
-        showToast(
-            "Login Failed",
-            error.message,
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    showToast(
-        "Welcome!",
-        "You have successfully logged in.",
-        "success"
-    );
-
-
-    showTeacherPanel(data.user);
-
-}
-
-
-// ============================================
-// SHOW TEACHER PANEL
-// ============================================
-
-function showTeacherPanel(user) {
-
-    const loginScreen =
-        document.getElementById("loginScreen");
-
-    const teacherPanel =
-        document.getElementById("teacherPanel");
-
-    if (loginScreen) {
-        loginScreen.style.display = "none";
-    }
-
-    if (teacherPanel) {
-        teacherPanel.style.display = "block";
-    }
-
-    // Load dashboard data
-    loadPoints();
-    loadLogs();
-    loadProfile();
-}
-
-// ============================================
-// CHECK LOGIN
-// ============================================
+// ========================================================
 
 async function checkLogin() {
 
@@ -176,81 +120,53 @@ async function checkLogin() {
             user
         }
     } =
-        await supabaseClient.auth
+        await supabaseClient
+            .auth
             .getUser();
 
+    if (!user) {
 
-    if (user) {
+        window.location.href =
+            "index.html";
 
-        showTeacherPanel(user);
-
+        return false;
     }
 
+    currentUser = user;
+
+    return true;
 }
 
 
-// ============================================
-// LOGOUT
-// ============================================
-
-async function logout() {
-
-    await supabaseClient.auth.signOut();
-
-
-    document.getElementById(
-        "teacherPanel"
-    ).style.display = "none";
-
-
-    document.getElementById(
-        "loginScreen"
-    ).style.display = "block";
-
-
-    document.getElementById(
-        "password"
-    ).value = "";
-
-
-    currentProfile = null;
-
-
-    showToast(
-        "Logged Out",
-        "You have been logged out.",
-        "success"
-    );
-
-}
-
-
-// ============================================
+// ========================================================
 // LOAD PROFILE
-// ============================================
+// ========================================================
 
 async function loadProfile() {
-
-    const {
-        data: {
-            user
-        }
-    } =
-        await supabaseClient.auth.getUser();
-
-
-    if (!user) return;
-
 
     const {
         data,
         error
     } =
         await supabaseClient
+
             .from("profiles")
-            .select("*")
-            .eq("id", user.id)
-            .maybeSingle();
+
+            .select(`
+                id,
+                display_name,
+                pronouns,
+                avatar_url,
+                bio,
+                role
+            `)
+
+            .eq(
+                "id",
+                currentUser.id
+            )
+
+            .single();
 
 
     if (error) {
@@ -261,69 +177,30 @@ async function loadProfile() {
         );
 
         showToast(
-            "Profile Error",
-            "Could not load your profile.",
+            "Failed to load your profile.",
             "error"
         );
 
         return;
-
     }
 
 
-    if (!data) {
+    currentProfile = data;
 
-        currentProfile = {
-            id: user.id,
-            display_name: "",
-            pronouns: "",
-            avatar_url: "",
-            bio: ""
-        };
-
-
-        const {
-            error: insertError
-        } =
-            await supabaseClient
-                .from("profiles")
-                .insert(currentProfile);
-
-
-        if (insertError) {
-
-            console.error(
-                "Failed to create profile:",
-                insertError
-            );
-
-        }
-
-    } else {
-
-        currentProfile = data;
-
-    }
-
-
-    updateProfileDisplay(user);
-
-}
-
-
-// ============================================
-// UPDATE PROFILE DISPLAY
-// ============================================
-
-function updateProfileDisplay(user) {
 
     const displayName =
-        currentProfile.display_name ||
-        user.email.split("@")[0];
+        data.display_name ||
+        "User";
 
 
     document.getElementById(
-        "profileDisplayName"
+        "headerUserName"
+    ).textContent =
+        displayName;
+
+
+    document.getElementById(
+        "profileName"
     ).textContent =
         displayName;
 
@@ -331,786 +208,1380 @@ function updateProfileDisplay(user) {
     document.getElementById(
         "profilePronouns"
     ).textContent =
-        currentProfile.pronouns ||
-        "Pronouns not set";
+        data.pronouns ||
+        "";
 
 
-    document.getElementById(
-        "profileEmail"
-    ).textContent =
-        user.email;
+    const roleElement =
+        document.getElementById(
+            "profileRole"
+        );
+
+
+    roleElement.textContent =
+        formatRole(data.role);
+
+
+    roleElement.className =
+        `role role-${data.role}`;
 
 
     document.getElementById(
         "profileBio"
     ).textContent =
-        currentProfile.bio || "";
+        data.bio ||
+        "";
 
 
-    const avatar =
+    const picture =
         document.getElementById(
-            "profileAvatar"
+            "profilePicture"
         );
 
 
-    if (currentProfile.avatar_url) {
-
-        avatar.src =
-            currentProfile.avatar_url;
-
-    } else {
-
-        avatar.src =
-            "https://placehold.co/120x120?text=Profile";
-
-    }
+    picture.src =
+        data.avatar_url ||
+        DEFAULT_AVATAR;
 
 
-    avatar.onerror = function () {
+    picture.onerror =
+        function () {
 
-        avatar.src =
-            "https://placehold.co/120x120?text=Profile";
+            picture.onerror = null;
 
-    };
+            picture.src =
+                DEFAULT_AVATAR;
 
-}
+        };
 
 
-// ============================================
-// OPEN PROFILE EDITOR
-// ============================================
+    document.getElementById(
+        "displayName"
+    ).value =
+        data.display_name ||
+        "";
 
-function openProfileEditor() {
 
-    if (!currentProfile) {
+    document.getElementById(
+        "pronouns"
+    ).value =
+        data.pronouns ||
+        "";
 
-        showToast(
-            "Profile Loading",
-            "Please wait for your profile to load.",
-            "warning"
+
+    document.getElementById(
+        "avatarUrl"
+    ).value =
+        data.avatar_url ||
+        "";
+
+
+    document.getElementById(
+        "bio"
+    ).value =
+        data.bio ||
+        "";
+
+
+    if (
+        data.role === "admin"
+    ) {
+
+        document.getElementById(
+            "adminSection"
+        ).classList.remove(
+            "hidden"
         );
 
-        return;
-
     }
-
-
-    document.getElementById(
-        "editDisplayName"
-    ).value =
-        currentProfile.display_name || "";
-
-
-    document.getElementById(
-        "editPronouns"
-    ).value =
-        currentProfile.pronouns || "";
-
-
-    document.getElementById(
-        "editAvatarUrl"
-    ).value =
-        currentProfile.avatar_url || "";
-
-
-    document.getElementById(
-        "editBio"
-    ).value =
-        currentProfile.bio || "";
-
-
-    document.getElementById(
-        "profileEditor"
-    ).style.display =
-        "flex";
-
 }
 
 
-// ============================================
-// CLOSE PROFILE EDITOR
-// ============================================
+// ========================================================
+// LOAD POINTS
+// ========================================================
 
-function closeProfileEditor() {
-
-    document.getElementById(
-        "profileEditor"
-    ).style.display =
-        "none";
-
-}
-
-
-// ============================================
-// SAVE PROFILE
-// ============================================
-
-async function saveProfile() {
-
-    const {
-        data: {
-            user
-        }
-    } =
-        await supabaseClient.auth.getUser();
-
-
-    if (!user) {
-
-        showToast(
-            "Error",
-            "You must be logged in.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const displayName =
-        document
-            .getElementById("editDisplayName")
-            .value
-            .trim();
-
-
-    const pronouns =
-        document
-            .getElementById("editPronouns")
-            .value
-            .trim();
-
-
-    const avatarUrl =
-        document
-            .getElementById("editAvatarUrl")
-            .value
-            .trim();
-
-
-    const bio =
-        document
-            .getElementById("editBio")
-            .value
-            .trim();
-
+async function loadPoints() {
 
     const {
         data,
         error
     } =
         await supabaseClient
-            .from("profiles")
-            .upsert({
-                id: user.id,
-                display_name: displayName,
-                pronouns: pronouns,
-                avatar_url: avatarUrl,
-                bio: bio,
-                updated_at: new Date().toISOString()
-            })
-            .select()
-            .single();
 
-
-    if (error) {
-
-        console.error(error);
-
-        showToast(
-            "Profile Error",
-            error.message,
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    currentProfile = data;
-
-
-    updateProfileDisplay(user);
-
-
-    closeProfileEditor();
-
-
-    showToast(
-        "Profile Saved",
-        "Your profile has been updated!",
-        "success"
-    );
-
-}
-
-
-// ============================================
-// CHANGE POINTS
-// ============================================
-
-async function changePoints(faction, amount) {
-
-    const {
-        data: {
-            user
-        }
-    } =
-        await supabaseClient.auth
-            .getUser();
-
-
-    if (!user) {
-
-        showToast(
-            "Not Logged In",
-            "Please log in again.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
             .from("factions")
-            .select("points")
-            .eq("name", faction)
-            .single();
 
-
-    if (error) {
-
-        console.error(error);
-
-        showToast(
-            "Error",
-            "Failed to get faction points.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const pointsBefore =
-        data.points;
-
-
-    let newPoints =
-        pointsBefore + amount;
-
-
-    if (newPoints < 0) {
-
-        newPoints = 0;
-
-    }
-
-
-    const actualChange =
-        newPoints - pointsBefore;
-
-
-    const {
-        error: updateError
-    } =
-        await supabaseClient
-            .from("factions")
-            .update({
-                points: newPoints
-            })
-            .eq("name", faction);
-
-
-    if (updateError) {
-
-        console.error(updateError);
-
-        showToast(
-            "Update Failed",
-            updateError.message,
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (actualChange !== 0) {
-
-        const {
-            error: logError
-        } =
-            await supabaseClient
-                .from("point_logs")
-                .insert({
-
-                    teacher_email:
-                        user.email,
-                        teacher_name: currentProfile?.display_name || user.email,
-
-                    action:
-                        actualChange > 0
-                            ? "ADD_POINTS"
-                            : "REMOVE_POINTS",
-
-                    faction:
-                        faction,
-
-                    points_change:
-                        actualChange,
-
-                    points_before:
-                        pointsBefore,
-
-                    points_after:
-                        newPoints
-
-                });
-
-
-        if (logError) {
-
-            console.error(
-                "Logging failed:",
-                logError
+            .select(
+                "name, points"
             );
 
-        }
 
-    }
+    if (error) {
 
-
-    const factionDisplay =
-        faction.charAt(0).toUpperCase() +
-        faction.slice(1);
-
-
-    if (actualChange > 0) {
-
-        showToast(
-            "Points Added",
-            `${factionDisplay} received +${actualChange} point.`,
-            "success"
+        console.error(
+            "Failed to load points:",
+            error
         );
 
-    } else if (actualChange < 0) {
-
         showToast(
-            "Points Removed",
-            `${factionDisplay} lost ${Math.abs(actualChange)} point.`,
-            "warning"
-        );
-
-    } else {
-
-        showToast(
-            "No Change",
-            `${factionDisplay} already has 0 points.`,
-            "warning"
-        );
-
-    }
-
-
-    loadPoints();
-
-    loadLogs();
-
-}
-
-
-// ============================================
-// RESET FACTION
-// ============================================
-
-async function resetFaction(faction) {
-
-    const {
-        data: {
-            user
-        }
-    } =
-        await supabaseClient.auth
-            .getUser();
-
-
-    if (!user) {
-
-        showToast(
-            "Not Logged In",
-            "Please log in again.",
+            "Failed to load faction points.",
             "error"
         );
 
         return;
-
     }
 
+
+    data.forEach(
+        faction => {
+
+            const factionName =
+                String(
+                    faction.name
+                ).toLowerCase();
+
+
+            const element =
+                document.getElementById(
+                    `${factionName}Points`
+                );
+
+
+            if (!element) {
+                return;
+            }
+
+
+            element.textContent =
+                Number(
+                    faction.points || 0
+                ).toLocaleString();
+
+        }
+    );
+}
+
+
+// ========================================================
+// GET AMOUNT
+// ========================================================
+
+function getAmount(faction) {
+
+    const input =
+        document.getElementById(
+            `${faction}Amount`
+        );
+
+
+    if (!input) {
+        return null;
+    }
+
+
+    const amount =
+        Number(
+            input.value
+        );
+
+
+    if (
+        !Number.isInteger(amount) ||
+        amount <= 0
+    ) {
+
+        showToast(
+            "Enter a valid amount greater than 0.",
+            "error"
+        );
+
+        return null;
+    }
+
+
+    return amount;
+}
+
+
+// ========================================================
+// GET CURRENT FACTION
+// ========================================================
+
+async function getFaction(
+    factionName
+) {
 
     const {
         data,
         error
     } =
         await supabaseClient
+
             .from("factions")
-            .select("points")
-            .eq("name", faction)
+
+            .select(
+                "name, points"
+            )
+
+            .eq(
+                "name",
+                factionName
+            )
+
             .single();
 
 
     if (error) {
 
+        console.error(
+            error
+        );
+
         showToast(
-            "Error",
-            "Failed to get faction points.",
+            `Could not find faction ${factionName}.`,
             "error"
         );
 
-        return;
-
+        return null;
     }
 
 
-    const pointsBefore =
-        data.points;
+    return data;
+}
 
 
-    if (pointsBefore === 0) {
+// ========================================================
+// LOG ACTION
+// ========================================================
 
-        showToast(
-            "Already Reset",
-            `${faction} already has 0 points.`,
-            "warning"
-        );
+async function logPointAction(
+    action,
+    faction,
+    pointsChange,
+    pointsBefore,
+    pointsAfter
+) {
 
-        return;
+    /*
+     * The audit table historically used teacher_email.
+     * We intentionally store the profile display name here
+     * rather than exposing the user's email.
+     */
 
-    }
+    const actorName =
+        currentProfile?.display_name ||
+        "Admin";
 
 
     const {
-        error: updateError
+        error
     } =
         await supabaseClient
-            .from("factions")
-            .update({
-                points: 0
-            })
-            .eq("name", faction);
 
-
-    if (updateError) {
-
-        showToast(
-            "Reset Failed",
-            updateError.message,
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const {
-        error: logError
-    } =
-        await supabaseClient
             .from("point_logs")
+
             .insert({
 
                 teacher_email:
-                    user.email,
-                    teacher_name: currentProfile?.display_name || user.email,
+                    actorName,
 
                 action:
-                    "RESET",
+                    action,
 
                 faction:
                     faction,
 
                 points_change:
-                    -pointsBefore,
+                    pointsChange,
 
                 points_before:
                     pointsBefore,
 
                 points_after:
-                    0
+                    pointsAfter
 
             });
 
 
-    if (logError) {
+    if (error) {
 
         console.error(
-            "Logging failed:",
-            logError
+            "Failed to create audit log:",
+            error
         );
 
+        return false;
     }
 
 
-    const factionDisplay =
-        faction.charAt(0).toUpperCase() +
-        faction.slice(1);
+    return true;
+}
+
+
+// ========================================================
+// ADD POINTS
+// ========================================================
+
+async function addPoints(
+    faction
+) {
+
+    const amount =
+        getAmount(faction);
+
+
+    if (amount === null) {
+        return;
+    }
+
+
+    const factionData =
+        await getFaction(faction);
+
+
+    if (!factionData) {
+        return;
+    }
+
+
+    const before =
+        Number(
+            factionData.points || 0
+        );
+
+
+    const after =
+        before + amount;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+
+            .from("factions")
+
+            .update({
+
+                points:
+                    after
+
+            })
+
+            .eq(
+                "name",
+                faction
+            );
+
+
+    if (error) {
+
+        console.error(
+            error
+        );
+
+        showToast(
+            "Failed to add points.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    await logPointAction(
+        "ADD_POINTS",
+        faction,
+        amount,
+        before,
+        after
+    );
 
 
     showToast(
-        "Faction Reset",
-        `${factionDisplay} has been reset to 0 points.`,
+        `Added ${amount.toLocaleString()} point${amount === 1 ? "" : "s"} to ${capitalize(faction)}.`,
         "success"
     );
 
 
-    loadPoints();
-
-    loadLogs();
-
+    await loadPoints();
 }
 
 
-// ============================================
-// LOAD LOGS
-// ============================================
+// ========================================================
+// REMOVE POINTS
+// ========================================================
 
-async function loadLogs() {
+async function removePoints(
+    faction
+) {
 
-    const logsBody =
-        document.getElementById("logsBody");
-
-
-    if (!logsBody) return;
-
-
-    const factionFilter =
-        document.getElementById("logFaction").value;
+    const amount =
+        getAmount(faction);
 
 
-    const actionFilter =
-        document.getElementById("logAction").value;
-
-
-    let query =
-        supabaseClient
-            .from("point_logs")
-            .select("*")
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            )
-            .limit(100);
-
-
-    if (factionFilter !== "all") {
-
-        query =
-            query.eq(
-                "faction",
-                factionFilter
-            );
-
+    if (amount === null) {
+        return;
     }
 
 
-    if (actionFilter !== "all") {
+    const factionData =
+        await getFaction(faction);
 
-        query =
-            query.eq(
-                "action",
-                actionFilter
-            );
 
+    if (!factionData) {
+        return;
     }
 
+
+    const before =
+        Number(
+            factionData.points || 0
+        );
+
+
+    const after =
+        Math.max(
+            0,
+            before - amount
+        );
+
+
+    const actualChange =
+        after - before;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+
+            .from("factions")
+
+            .update({
+
+                points:
+                    after
+
+            })
+
+            .eq(
+                "name",
+                faction
+            );
+
+
+    if (error) {
+
+        console.error(
+            error
+        );
+
+        showToast(
+            "Failed to remove points.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    await logPointAction(
+        "REMOVE_POINTS",
+        faction,
+        actualChange,
+        before,
+        after
+    );
+
+
+    showToast(
+        `Removed ${Math.abs(actualChange).toLocaleString()} point${Math.abs(actualChange) === 1 ? "" : "s"} from ${capitalize(faction)}.`,
+        "success"
+    );
+
+
+    await loadPoints();
+}
+
+
+// ========================================================
+// RESET FACTION
+// ========================================================
+
+async function resetFaction(
+    faction
+) {
+
+    const factionData =
+        await getFaction(faction);
+
+
+    if (!factionData) {
+        return;
+    }
+
+
+    const before =
+        Number(
+            factionData.points || 0
+        );
+
+
+    if (before === 0) {
+
+        showToast(
+            `${capitalize(faction)} already has 0 points.`,
+            "warning"
+        );
+
+        return;
+    }
+
+
+    const after = 0;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+
+            .from("factions")
+
+            .update({
+
+                points:
+                    0
+
+            })
+
+            .eq(
+                "name",
+                faction
+            );
+
+
+    if (error) {
+
+        console.error(
+            error
+        );
+
+        showToast(
+            "Failed to reset faction.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    await logPointAction(
+        "RESET_POINTS",
+        faction,
+        -before,
+        before,
+        after
+    );
+
+
+    showToast(
+        `${capitalize(faction)} has been reset to 0 points.`,
+        "success"
+    );
+
+
+    await loadPoints();
+}
+
+
+// ========================================================
+// CAPITALIZE
+// ========================================================
+
+function capitalize(
+    value
+) {
+
+    return value.charAt(0).toUpperCase()
+        + value.slice(1);
+}
+
+
+// ========================================================
+// LOAD TAGS
+// ========================================================
+
+async function loadTags() {
 
     const {
         data,
         error
     } =
-        await query;
+        await supabaseClient
+
+            .from("tags")
+
+            .select(`
+                id,
+                name,
+                description
+            `)
+
+            .order(
+                "name",
+                {
+                    ascending: true
+                }
+            );
 
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            "Failed to load tags:",
+            error
+        );
 
-        logsBody.innerHTML = `
-            <tr>
-                <td colspan="7" class="no-logs">
-                    ❌ Failed to load logs.
-                </td>
-            </tr>
+        document.getElementById(
+            "tagSelector"
+        ).innerHTML = `
+            <span class="error">
+                Failed to load tags.
+            </span>
         `;
 
         return;
-
     }
 
 
-    if (!data || data.length === 0) {
-
-        logsBody.innerHTML = `
-            <tr>
-                <td colspan="7" class="no-logs">
-                    No logs found.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
+    availableTags =
+        data || [];
 
 
-    logsBody.innerHTML = "";
+    await loadCurrentTags();
 
+    renderTagSelector();
 
-    data.forEach(function (log) {
+    renderSelectedTags();
 
-        const row =
-            document.createElement("tr");
-
-
-        const date =
-            new Date(log.created_at);
-
-
-        const formattedDate =
-            date.toLocaleString();
-
-
-        let actionText =
-            log.action;
-
-
-        let actionClass = "";
-
-
-        if (log.action === "ADD_POINTS") {
-
-            actionText =
-                "➕ Added Points";
-
-            actionClass =
-                "add-log";
-
-        }
-
-
-        if (log.action === "REMOVE_POINTS") {
-
-            actionText =
-                "➖ Removed Points";
-
-            actionClass =
-                "remove-log";
-
-        }
-
-
-        if (log.action === "RESET") {
-
-            actionText =
-                "🔄 Reset";
-
-            actionClass =
-                "reset-log";
-
-        }
-
-
-        let change =
-            log.points_change;
-
-
-        if (change > 0) {
-
-            change =
-                "+" + change;
-
-        }
-
-
-        row.innerHTML = `
-
-            <td>
-                ${escapeHtml(formattedDate)}
-            </td>
-
-            <td>
-                ${escapeHtml(
-                    log.teacher_name ||
-                    log.teacher_email ||
-                    "Unknown"
-                )}
-            </td>
-
-            <td class="${actionClass}">
-                ${actionText}
-            </td>
-
-            <td>
-                ${escapeHtml(log.faction || "-")}
-            </td>
-
-            <td>
-                ${change}
-            </td>
-
-            <td>
-                ${log.points_before ?? "-"}
-            </td>
-
-            <td>
-                ${log.points_after ?? "-"}
-            </td>
-
-        `;
-
-
-        logsBody.appendChild(row);
-
-    });
-
+    renderProfileTags();
 }
 
 
-// ============================================
-// ENTER KEY LOGIN
-// ============================================
+// ========================================================
+// LOAD CURRENT TAGS
+// ========================================================
 
-document
-    .getElementById("password")
-    .addEventListener(
-        "keydown",
-        function (event) {
+async function loadCurrentTags() {
 
-            if (event.key === "Enter") {
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
 
-                login();
+            .from("profile_tags")
+
+            .select(
+                "tag_id"
+            )
+
+            .eq(
+                "profile_id",
+                currentUser.id
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Failed to load current tags:",
+            error
+        );
+
+        selectedTagIds = [];
+
+        return;
+    }
+
+
+    selectedTagIds =
+        (data || [])
+            .map(
+                row => row.tag_id
+            );
+}
+
+
+// ========================================================
+// RENDER TAG SELECTOR
+// ========================================================
+
+function renderTagSelector() {
+
+    const container =
+        document.getElementById(
+            "tagSelector"
+        );
+
+
+    if (
+        !availableTags.length
+    ) {
+
+        container.innerHTML = `
+            <span class="empty">
+                No tags are currently available.
+            </span>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    availableTags.forEach(
+        tag => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type =
+                "button";
+
+
+            button.className =
+                "tag-option";
+
+
+            if (
+                selectedTagIds.includes(
+                    tag.id
+                )
+            ) {
+
+                button.classList.add(
+                    "selected"
+                );
 
             }
 
+
+            button.textContent =
+                tag.name;
+
+
+            if (
+                tag.description
+            ) {
+
+                button.title =
+                    tag.description;
+
+            }
+
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    toggleTag(
+                        tag.id
+                    );
+
+                }
+            );
+
+
+            container.appendChild(
+                button
+            );
+
         }
+    );
+}
+
+
+// ========================================================
+// TOGGLE TAG
+// ========================================================
+
+function toggleTag(
+    tagId
+) {
+
+    if (
+        selectedTagIds.includes(
+            tagId
+        )
+    ) {
+
+        selectedTagIds =
+            selectedTagIds.filter(
+                id => id !== tagId
+            );
+
+    } else {
+
+        selectedTagIds.push(
+            tagId
+        );
+
+    }
+
+
+    renderTagSelector();
+
+    renderSelectedTags();
+}
+
+
+// ========================================================
+// RENDER SELECTED TAGS
+// ========================================================
+
+function renderSelectedTags() {
+
+    const container =
+        document.getElementById(
+            "selectedTags"
+        );
+
+
+    container.innerHTML = "";
+
+
+    selectedTagIds.forEach(
+        tagId => {
+
+            const tag =
+                availableTags.find(
+                    item =>
+                        item.id === tagId
+                );
+
+
+            if (!tag) {
+                return;
+            }
+
+
+            const element =
+                document.createElement(
+                    "span"
+                );
+
+
+            element.className =
+                "selected-tag";
+
+
+            element.innerHTML = `
+                ${escapeHtml(tag.name)}
+                <button
+                    type="button"
+                    aria-label="Remove tag"
+                >
+                    ×
+                </button>
+            `;
+
+
+            element
+                .querySelector("button")
+                .addEventListener(
+                    "click",
+                    () => {
+
+                        toggleTag(
+                            tag.id
+                        );
+
+                    }
+                );
+
+
+            container.appendChild(
+                element
+            );
+
+        }
+    );
+}
+
+
+// ========================================================
+// RENDER PROFILE TAGS
+// ========================================================
+
+function renderProfileTags() {
+
+    const container =
+        document.getElementById(
+            "profileTags"
+        );
+
+
+    container.innerHTML = "";
+
+
+    selectedTagIds.forEach(
+        tagId => {
+
+            const tag =
+                availableTags.find(
+                    item =>
+                        item.id === tagId
+                );
+
+
+            if (!tag) {
+                return;
+            }
+
+
+            const element =
+                document.createElement(
+                    "span"
+                );
+
+
+            element.className =
+                "tag";
+
+
+            element.textContent =
+                tag.name;
+
+
+            container.appendChild(
+                element
+            );
+
+        }
+    );
+}
+
+
+// ========================================================
+// SAVE PROFILE
+// ========================================================
+
+async function saveProfile() {
+
+    const displayName =
+        document.getElementById(
+            "displayName"
+        ).value.trim();
+
+
+    const pronouns =
+        document.getElementById(
+            "pronouns"
+        ).value.trim();
+
+
+    const avatarUrl =
+        document.getElementById(
+            "avatarUrl"
+        ).value.trim();
+
+
+    const bio =
+        document.getElementById(
+            "bio"
+        ).value.trim();
+
+
+    if (!displayName) {
+
+        showToast(
+            "Display name cannot be empty.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const button =
+        document.getElementById(
+            "saveProfileButton"
+        );
+
+
+    button.disabled =
+        true;
+
+
+    button.textContent =
+        "Saving...";
+
+
+    // ================================================
+    // UPDATE PROFILE
+    // ================================================
+
+    const {
+        error
+    } =
+        await supabaseClient
+
+            .from("profiles")
+
+            .update({
+
+                display_name:
+                    displayName,
+
+                pronouns:
+                    pronouns || null,
+
+                avatar_url:
+                    avatarUrl || null,
+
+                bio:
+                    bio || null,
+
+                updated_at:
+                    new Date().toISOString()
+
+            })
+
+            .eq(
+                "id",
+                currentUser.id
+            );
+
+
+    if (error) {
+
+        console.error(
+            error
+        );
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "Save Profile";
+
+        return;
+    }
+
+
+    // ================================================
+    // DELETE OLD TAGS
+    // ================================================
+
+    const {
+        error: deleteError
+    } =
+        await supabaseClient
+
+            .from("profile_tags")
+
+            .delete()
+
+            .eq(
+                "profile_id",
+                currentUser.id
+            );
+
+
+    if (deleteError) {
+
+        console.error(
+            deleteError
+        );
+
+        showToast(
+            "Profile saved, but tags could not be updated.",
+            "error"
+        );
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "Save Profile";
+
+        return;
+    }
+
+
+    // ================================================
+    // INSERT TAGS
+    // ================================================
+
+    if (
+        selectedTagIds.length > 0
+    ) {
+
+        const rows =
+            selectedTagIds.map(
+                tagId => ({
+
+                    profile_id:
+                        currentUser.id,
+
+                    tag_id:
+                        tagId
+
+                })
+            );
+
+
+        const {
+            error: tagError
+        } =
+            await supabaseClient
+
+                .from("profile_tags")
+
+                .insert(
+                    rows
+                );
+
+
+        if (tagError) {
+
+            console.error(
+                tagError
+            );
+
+            showToast(
+                "Profile saved, but tags could not be updated.",
+                "error"
+            );
+
+            button.disabled =
+                false;
+
+            button.textContent =
+                "Save Profile";
+
+            return;
+        }
+    }
+
+
+    showToast(
+        "Profile updated successfully.",
+        "success"
     );
 
 
-// ============================================
-// START
-// ============================================
+    button.disabled =
+        false;
 
-checkLogin();
+    button.textContent =
+        "Save Profile";
+
+
+    await loadProfile();
+
+    await loadCurrentTags();
+
+    renderTagSelector();
+
+    renderSelectedTags();
+
+    renderProfileTags();
+}
+
+
+// ========================================================
+// LOAD BADGES
+// ========================================================
+
+async function loadBadges() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+
+            .from("profile_badges")
+
+            .select(`
+                badge_id,
+                badges (
+                    id,
+                    name,
+                    description,
+                    icon
+                )
+            `)
+
+            .eq(
+                "profile_id",
+                currentUser.id
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Failed to load badges:",
+            error
+        );
+
+        document.getElementById(
+            "profileBadges"
+        ).innerHTML = `
+            <span class="error">
+                Failed to load badges.
+            </span>
+        `;
+
+        return;
+    }
+
+
+    const container =
+        document.getElementById(
+            "profileBadges"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (
+        !data ||
+        data.length === 0
+    ) {
+
+        container.innerHTML = `
+            <span class="empty">
+                No badges yet.
+            </span>
+        `;
+
+        return;
+    }
+
+
+    data.forEach(
+        item => {
+
+            if (!item.badges) {
+                return;
+            }
+
+
+            const badge =
+                document.createElement(
+                    "span"
+                );
+
+
+            badge.className =
+                "tag";
+
+
+            badge.textContent =
+                `${item.badges.icon || "🏅"} ${item.badges.name}`;
+
+
+            if (
+                item.badges.description
+            ) {
+
+                badge.title =
+                    item.badges.description;
+
+            }
+
+
+            container.appendChild(
+                badge
+            );
+
+        }
+    );
+}
+
+
+// ========================================================
+// LOGOUT
+// ========================================================
+
+document.getElementById(
+    "logoutButton"
+).addEventListener(
+    "click",
+    async function () {
+
+        await supabaseClient
+            .auth
+            .signOut();
+
+
+        window.location.href =
+            "index.html";
+
+    }
+);
+
+
+// ========================================================
+// SAVE PROFILE BUTTON
+// ========================================================
+
+document.getElementById(
+    "saveProfileButton"
+).addEventListener(
+    "click",
+    saveProfile
+);
+
+
+// ========================================================
+// AUTOMATIC POINT REFRESH
+// ========================================================
+
+setInterval(
+    loadPoints,
+    2000
+);
+
+
+// ========================================================
+// START
+// ========================================================
+
+(async function () {
+
+    const loggedIn =
+        await checkLogin();
+
+
+    if (!loggedIn) {
+        return;
+    }
+
+
+    await loadProfile();
+
+    await loadPoints();
+
+    await loadTags();
+
+    await loadBadges();
+
+})();
