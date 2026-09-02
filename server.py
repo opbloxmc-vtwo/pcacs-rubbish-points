@@ -5,27 +5,36 @@ import uvicorn
 import json
 import os
 
-app = FastAPI()
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+app = FastAPI(
+    title="Rubbish Collection Points System",
+    docs_url=None,
+    redoc_url=None
+)
 
 
 # ============================================================
 # HTML PAGES
 # ============================================================
 
-@app.get("/")
+@app.get("/", include_in_schema=False)
 async def index():
     return FileResponse(
         os.path.join(BASE_DIR, "index.html")
     )
 
 
-@app.get("/teacher")
+@app.get("/teacher", include_in_schema=False)
 async def teacher():
     return FileResponse(
         os.path.join(BASE_DIR, "teacherpage.html")
     )
+
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 
 
 # ============================================================
@@ -54,12 +63,6 @@ async def receive_supabase_webhook(request: Request):
 # STATIC FILES
 # ============================================================
 
-# Serve files such as:
-# /main.js
-# /teacher.js
-# /favicon.ico
-# /LICENSE
-# etc.
 app.mount(
     "/",
     StaticFiles(directory=BASE_DIR),
@@ -72,9 +75,13 @@ app.mount(
 # ============================================================
 
 if __name__ == "__main__":
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", "3000"))
+    reload_enabled = os.getenv("RELOAD", "false").lower() == "true"
+
     uvicorn.run(
-        "server:app",
-        host="127.0.0.1",
-        port=3000,
-        reload=True
+        app,
+        host=host,
+        port=port,
+        reload=reload_enabled
     )

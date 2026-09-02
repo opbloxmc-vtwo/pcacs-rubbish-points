@@ -14,116 +14,328 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     margin: 0;
-    background: #0d0d0d;
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg, #0a0a14 0%, #0d0d1f 100%);
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .header {
-    background: #09091f;
-    border-bottom: 1px solid #29294a;
-    padding: 18px 30px;
-
+    background: linear-gradient(135deg, #0f0f2f 0%, #1a1a3f 100%);
+    border-bottom: 2px solid #4a7aff;
+    padding: 20px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 10px 40px rgba(74, 122, 255, 0.15);
+    z-index: 100;
 }
 
 .header h1 {
     margin: 0;
+    font-size: 24px;
+    background: linear-gradient(135deg, #7fa7ff 0%, #4a7aff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.main-wrapper {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 280px;
+    background: linear-gradient(135deg, #0f0f2f 0%, #1a1a3f 100%);
+    border-right: 2px solid #3a3a6a;
+    padding: 20px 0;
+    overflow-y: auto;
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-title {
+    padding: 0 20px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+
+.sidebar-title:first-child {
+    margin-top: 0;
+}
+
+.tab-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 20px;
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    color: #a0a0c0;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-align: left;
+    font-family: inherit;
+}
+
+.tab-button:hover {
+    background: rgba(74, 122, 255, 0.1);
+    color: #7fa7ff;
+    border-left-color: #4a7aff;
+}
+
+.tab-button.active {
+    background: rgba(74, 122, 255, 0.2);
+    color: #7fa7ff;
+    border-left-color: #4a7aff;
 }
 
 .container {
-    max-width: 1300px;
-    margin: auto;
-    padding: 30px;
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px;
+    max-width: 1400px;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 0 20px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #4a7aff;
+    color: #7fa7ff;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #1a1a3f 0%, #252550 100%);
+    border: 1px solid #3a3a6a;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    border-color: #4a7aff;
+    box-shadow: 0 5px 30px rgba(74, 122, 255, 0.3);
+    transform: translateY(-3px);
+}
+
+.stat-label {
+    color: #999;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #7fa7ff 0%, #4a7aff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .card {
-    background: #171717;
-    border: 1px solid #303030;
-    border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 20px;
+    background: linear-gradient(135deg, #1a1a3f 0%, #252550 100%);
+    border: 1px solid #3a3a6a;
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: border-color 0.3s ease;
+}
+
+.card:hover {
+    border-color: #4a7aff;
 }
 
 .card h2 {
     margin-top: 0;
+    margin-bottom: 8px;
+    color: #7fa7ff;
+    font-size: 18px;
+}
+
+.card-description {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 20px;
 }
 
 .grid {
     display: grid;
-    grid-template-columns:
-        repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
 
-    gap: 15px;
+.form-group {
+    display: flex;
+    flex-direction: column;
 }
 
 input,
 textarea,
 select {
     width: 100%;
-    background: #0d0d0d;
-    border: 1px solid #3a3a3a;
-    color: white;
-    padding: 11px;
-    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #3a3a6a;
+    color: #e0e0e0;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin-bottom: 8px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #4a7aff;
+    background: rgba(74, 122, 255, 0.1);
+    box-shadow: 0 0 15px rgba(74, 122, 255, 0.2);
+}
+
+input::placeholder {
+    color: #666;
 }
 
 label {
     display: block;
-    color: #aaa;
-    margin-bottom: 6px;
+    color: #a0a0c0;
+    margin-bottom: 8px;
     font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .button {
     border: none;
-    border-radius: 7px;
-    padding: 10px 15px;
+    border-radius: 8px;
+    padding: 12px 20px;
     color: white;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .primary {
-    background: #315bdc;
+    background: linear-gradient(135deg, #4a7aff 0%, #315bdc 100%);
+    box-shadow: 0 4px 15px rgba(74, 122, 255, 0.3);
+}
+
+.primary:hover {
+    box-shadow: 0 6px 25px rgba(74, 122, 255, 0.5);
+    transform: translateY(-2px);
 }
 
 .danger {
-    background: #8b2d2d;
+    background: linear-gradient(135deg, #ff4a4a 0%, #cc0000 100%);
+    box-shadow: 0 4px 15px rgba(255, 74, 74, 0.3);
+}
+
+.danger:hover {
+    box-shadow: 0 6px 25px rgba(255, 74, 74, 0.5);
+    transform: translateY(-2px);
 }
 
 .success {
-    background: #287a47;
+    background: linear-gradient(135deg, #4caf70 0%, #2d7a47 100%);
+    box-shadow: 0 4px 15px rgba(76, 175, 112, 0.3);
+}
+
+.success:hover {
+    box-shadow: 0 6px 25px rgba(76, 175, 112, 0.5);
+    transform: translateY(-2px);
 }
 
 .secondary {
-    background: #303030;
+    background: rgba(74, 122, 255, 0.2);
+    border: 1px solid #4a7aff;
+    color: #7fa7ff;
 }
 
-.warning {
-    background: #876d19;
-}
-
-.button:hover {
-    filter: brightness(1.15);
+.secondary:hover {
+    background: rgba(74, 122, 255, 0.3);
 }
 
 .member {
-    background: #101010;
-    border: 1px solid #303030;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid #3a3a6a;
     border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 10px;
+    padding: 18px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+
+.member:hover {
+    border-color: #4a7aff;
+    background: rgba(74, 122, 255, 0.05);
 }
 
 .member-top {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 15px;
+    margin-bottom: 12px;
 }
 
 .member-avatar {
@@ -131,45 +343,82 @@ label {
     height: 50px;
     border-radius: 50%;
     object-fit: cover;
+    border: 2px solid #4a7aff;
+}
+
+.member-info {
+    flex: 1;
 }
 
 .member-name {
     font-weight: bold;
+    color: #7fa7ff;
+    margin-bottom: 3px;
 }
 
 .member-email {
-    color: #777;
+    color: #888;
     font-size: 12px;
 }
 
-.badges {
+.member-controls {
     display: flex;
+    gap: 10px;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
 }
 
-.badge {
-    background: #4d3c12;
-    border: 1px solid #8b7020;
-    color: #ffe994;
-    padding: 6px 10px;
-    border-radius: 20px;
+.member-controls select {
+    flex: 1;
+    min-width: 120px;
+    margin-bottom: 0;
+}
+
+.member-controls button {
+    padding: 8px 12px;
     font-size: 12px;
 }
 
-.tag {
-    background: #25254d;
-    border: 1px solid #3b3b73;
-    color: #c4c4ff;
-    padding: 6px 10px;
+.search-box {
+    margin-bottom: 20px;
+}
+
+.search-box input {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid #3a3a6a;
+    color: #e0e0e0;
+    border-radius: 8px;
+}
+
+.badge, .tag {
+    display: inline-block;
+    background: linear-gradient(135deg, #7fa7ff 0%, #4a7aff 100%);
+    border: 1px solid #5080ff;
+    color: #fff;
+    padding: 6px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 4px 4px 4px 0;
 }
 
 .log {
-    border-bottom: 1px solid #2c2c2c;
-    padding: 12px 0;
+    border-left: 3px solid #4a7aff;
+    border-bottom: 1px solid #3a3a6a;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 0 8px 8px 0;
+    background: rgba(74, 122, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.log:hover {
+    background: rgba(74, 122, 255, 0.1);
 }
 
 .log:last-child {
@@ -178,11 +427,22 @@ label {
 
 .log-action {
     font-weight: bold;
+    color: #7fa7ff;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+
+.log-details {
+    color: #d0d0d0;
+    font-size: 13px;
+    margin-bottom: 5px;
 }
 
 .log-meta {
-    color: #777;
-    font-size: 12px;
+    color: #888;
+    font-size: 11px;
 }
 
 .hidden {
@@ -194,19 +454,28 @@ label {
     right: 20px;
     bottom: 20px;
     z-index: 9999;
-
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
+footer {
+    padding: 18px 30px;
+    color: #777;
+    text-align: center;
+    font-size: 12px;
+    border-top: 1px solid #28284d;
+}
+
 .toast {
-    background: #222;
-    border: 1px solid #444;
-    border-left: 4px solid #5d83ff;
-    padding: 14px 18px;
+    background: linear-gradient(135deg, #1a1a3f 0%, #252550 100%);
+    border: 1px solid #3a3a6a;
+    border-left: 4px solid #4a7aff;
+    padding: 16px 20px;
     border-radius: 8px;
-    min-width: 280px;
+    min-width: 320px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    animation: toastSlide 0.3s ease;
 }
 
 .toast-success {
@@ -214,7 +483,96 @@ label {
 }
 
 .toast-error {
-    border-left-color: #e05555;
+    border-left-color: #ff4a4a;
+}
+
+@keyframes toastSlide {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.action-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 1024px) {
+
+    .sidebar {
+        width: 240px;
+    }
+
+    .container {
+        padding: 30px;
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .main-wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 2px solid #3a3a6a;
+        padding: 10px 0;
+        display: flex;
+        overflow-x: auto;
+        overflow-y: hidden;
+        height: auto;
+    }
+
+    .sidebar-title {
+        display: none;
+    }
+
+    .tab-button {
+        padding: 12px 16px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4a7aff;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #7fa7ff;
 }
 
 </style>
@@ -225,205 +583,332 @@ label {
 
 <header class="header">
 
-<h1>Admin Dashboard</h1>
+<div>
+    <h1>⚙️ Admin Dashboard</h1>
+</div>
 
-<button id="logoutButton"
-        class="button secondary">
-Logout
-</button>
+<div class="header-buttons">
+    <a href="teacherpage.html" style="color: #7fa7ff; text-decoration: none;">
+        <button class="button secondary">← Teacher Portal</button>
+    </a>
+    <button id="logoutButton" class="button secondary">Logout</button>
+</div>
 
 </header>
 
+<div class="main-wrapper">
+
+<aside class="sidebar">
+
+    <div class="sidebar-title">📊 Overview</div>
+    <button class="tab-button active" data-tab="dashboard">
+        📈 Dashboard
+    </button>
+
+    <div class="sidebar-title">👥 Users & Roles</div>
+    <button class="tab-button" data-tab="members">
+        👥 Manage Members
+    </button>
+    <button class="tab-button" data-tab="roles">
+        🔐 User Roles
+    </button>
+
+    <div class="sidebar-title">🏆 Achievements</div>
+    <button class="tab-button" data-tab="badges">
+        🏆 Badges
+    </button>
+    <button class="tab-button" data-tab="give-badge">
+        🎁 Award Badges
+    </button>
+
+    <div class="sidebar-title">🏷️ Metadata</div>
+    <button class="tab-button" data-tab="tags">
+        🏷️ Tags
+    </button>
+
+    <div class="sidebar-title">📋 Activity</div>
+    <button class="tab-button" data-tab="logs">
+        📋 Audit Log
+    </button>
+
+</aside>
 
 <main class="container">
 
+    <!-- DASHBOARD TAB -->
+    <div id="dashboard" class="tab-content active">
 
-<!-- USERS -->
+        <div class="section-title">📊 Dashboard Overview</div>
 
-<section class="card">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Members</div>
+                <div class="stat-value" id="statMembers">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Badges</div>
+                <div class="stat-value" id="statBadges">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Tags</div>
+                <div class="stat-value" id="statTags">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Recent Actions</div>
+                <div class="stat-value" id="statActions">0</div>
+            </div>
+        </div>
 
-<h2>Manage Members</h2>
+    </div>
 
-<p style="color:#777;">
-Manage teacher roles and access.
-</p>
+    <!-- MEMBERS TAB -->
+    <div id="members" class="tab-content">
 
-<div id="members">
-Loading members...
-</div>
+        <div class="section-title">👥 Manage Members</div>
 
-</section>
+        <div class="card">
 
+            <h2>Members List</h2>
 
-<!-- BADGES -->
+            <p class="card-description">
+                Manage teacher profiles and access permissions.
+            </p>
 
-<section class="card">
+            <div class="search-box">
+                <input 
+                    id="searchMembers"
+                    type="text"
+                    placeholder="Search members by name..."
+                >
+            </div>
 
-<h2>Manage Badges</h2>
+            <div id="members-list">
+                Loading members...
+            </div>
 
-<div class="grid">
+        </div>
 
-<div>
+    </div>
 
-<label>Badge Name</label>
+    <!-- ROLES TAB -->
+    <div id="roles" class="tab-content">
 
-<input id="badgeName"
-       placeholder="e.g. Rubbish Hero">
+        <div class="section-title">🔐 User Roles Management</div>
 
-</div>
+        <div class="card">
 
-<div>
+            <h2>About Roles</h2>
 
-<label>Icon</label>
+            <p class="card-description">
+                Manage user access levels and permissions.
+            </p>
 
-<input id="badgeIcon"
-       placeholder="🏆">
+            <div style="margin: 20px 0; padding: 15px; background: rgba(74, 122, 255, 0.1); border-left: 3px solid #4a7aff; border-radius: 0 8px 8px 0;">
+                <p><strong>🔐 Admin:</strong> Full access to all admin features and user management.</p>
+                <p><strong>🧪 Tester:</strong> Can test features and provide feedback on the platform.</p>
+                <p><strong>👨‍🏫 Teacher:</strong> Standard access to manage points and update profile.</p>
+            </div>
 
-</div>
+            <div id="roles-list">
+                Loading roles overview...
+            </div>
 
-<div>
+        </div>
 
-<label>Description</label>
+    </div>
 
-<input id="badgeDescription"
-       placeholder="Awarded for...">
+    <!-- BADGES TAB -->
+    <div id="badges" class="tab-content">
 
-</div>
+        <div class="section-title">🏆 Badge Management</div>
 
-</div>
+        <div class="card">
 
-<br>
+            <h2>Create New Badge</h2>
 
-<button id="createBadgeButton"
-        class="button success">
-Create Badge
-</button>
+            <p class="card-description">
+                Create achievement badges to recognize member accomplishments.
+            </p>
 
-<div id="badges"
-     style="margin-top:20px;">
-Loading badges...
-</div>
+            <div class="grid">
 
-</section>
+                <div class="form-group">
+                    <label for="badgeName">Badge Name</label>
+                    <input id="badgeName"
+                           placeholder="e.g. Rubbish Hero">
+                </div>
 
+                <div class="form-group">
+                    <label for="badgeIcon">Icon/Emoji</label>
+                    <input id="badgeIcon"
+                           placeholder="🏆">
+                </div>
 
-<!-- TAGS -->
+                <div class="form-group">
+                    <label for="badgeDescription">Description</label>
+                    <input id="badgeDescription"
+                           placeholder="What is this badge for?">
+                </div>
 
-<section class="card">
+            </div>
 
-<h2>Manage Tags</h2>
+            <button id="createBadgeButton"
+                    class="button success">
+            ✓ Create Badge
+            </button>
 
-<div class="grid">
+        </div>
 
-<div>
+        <div class="card">
 
-<label>Tag Name</label>
+            <h2>Existing Badges</h2>
 
-<input id="tagName"
-       placeholder="English">
+            <div id="badges-list"
+                 style="margin-top:15px;">
+                Loading badges...
+            </div>
 
-</div>
+        </div>
 
-<div>
+    </div>
 
-<label>Description</label>
+    <!-- GIVE BADGE TAB -->
+    <div id="give-badge" class="tab-content">
 
-<input id="tagDescription"
-       placeholder="English teacher">
+        <div class="section-title">🎁 Award Badges to Members</div>
 
-</div>
+        <div class="card">
 
-</div>
+            <h2>Give Badge</h2>
 
-<br>
+            <p class="card-description">
+                Award an achievement badge to recognize a member's accomplishments.
+            </p>
 
-<button id="createTagButton"
-        class="button success">
-Create Tag
-</button>
+            <div class="grid">
 
-<div id="tags"
-     style="margin-top:20px;">
-Loading tags...
-</div>
+                <div class="form-group">
+                    <label for="badgeUser">Select Member</label>
+                    <select id="badgeUser">
+                        <option>Loading...</option>
+                    </select>
+                </div>
 
-</section>
+                <div class="form-group">
+                    <label for="badgeSelect">Select Badge</label>
+                    <select id="badgeSelect">
+                        <option>Loading...</option>
+                    </select>
+                </div>
 
+            </div>
 
-<!-- BADGE ASSIGNMENT -->
+            <button id="giveBadgeButton"
+                    class="button primary">
+            🎁 Award Badge
+            </button>
 
-<section class="card">
+        </div>
 
-<h2>Give Badge</h2>
+    </div>
 
-<div class="grid">
+    <!-- TAGS TAB -->
+    <div id="tags" class="tab-content">
 
-<div>
+        <div class="section-title">🏷️ Tag Management</div>
 
-<label>User</label>
+        <div class="card">
 
-<select id="badgeUser">
-<option>Loading...</option>
-</select>
+            <h2>Create New Tag</h2>
 
-</div>
+            <p class="card-description">
+                Create subject or category tags for member profiles.
+            </p>
 
-<div>
+            <div class="grid">
 
-<label>Badge</label>
+                <div class="form-group">
+                    <label for="tagName">Tag Name</label>
+                    <input id="tagName"
+                           placeholder="English">
+                </div>
 
-<select id="badgeSelect">
-<option>Loading...</option>
-</select>
+                <div class="form-group">
+                    <label for="tagDescription">Description</label>
+                    <input id="tagDescription"
+                           placeholder="English teacher">
+                </div>
 
-</div>
+            </div>
 
-</div>
+            <button id="createTagButton"
+                    class="button success">
+            ✓ Create Tag
+            </button>
 
-<br>
+        </div>
 
-<button id="giveBadgeButton"
-        class="button primary">
-Give Badge
-</button>
+        <div class="card">
 
-</section>
+            <h2>Existing Tags</h2>
 
+            <div id="tags-list"
+                 style="margin-top:15px;">
+                Loading tags...
+            </div>
 
-<!-- AUDIT LOG -->
+        </div>
 
-<section class="card">
+    </div>
 
-<h2>Audit Log</h2>
+    <!-- LOGS TAB -->
+    <div id="logs" class="tab-content">
 
-<button id="refreshLogs"
-        class="button secondary">
-Refresh Logs
-</button>
+        <div class="section-title">📋 Activity Log</div>
 
-<div id="logs"
-     style="margin-top:15px;">
-Loading logs...
-</div>
+        <div class="card">
 
-</section>
+            <h2>Point Changes & Activities</h2>
 
+            <p class="card-description">
+                View all point changes and administrative actions.
+            </p>
 
-<div style="margin-top:20px;">
+            <div class="action-bar">
+                <input 
+                    id="filterAction"
+                    type="text"
+                    placeholder="Filter by action..."
+                    style="max-width: 200px; margin-bottom: 0; flex: 1;"
+                >
+                <button id="refreshLogs"
+                        class="button secondary">
+                🔄 Refresh
+                </button>
+                <button id="exportLogs"
+                        class="button secondary">
+                📥 Export CSV
+                </button>
+            </div>
 
-<a href="teacherpage.html">
-<button class="button secondary">
-← Back to Teacher Portal
-</button>
-</a>
+            <div id="logs-list"
+                 style="margin-top:15px;">
+                Loading logs...
+            </div>
 
-</div>
+        </div>
+
+    </div>
 
 </main>
 
+</div>
 
 <div id="toastContainer"></div>
 
+<footer>
+    © 2026 Rubbish Collection Points System | Admin Panel
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 

@@ -1,12 +1,22 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Teacher Portal - Rubbish Collection Points</title>
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+    Teacher Portal - Rubbish Collection Points
+</title>
 
 <style>
+
 * {
     box-sizing: border-box;
 }
@@ -72,6 +82,7 @@ textarea {
     margin-top: 0;
 }
 
+
 /* =========================
    BUTTONS
 ========================= */
@@ -114,6 +125,7 @@ textarea {
 .button-secondary {
     background: #303030;
 }
+
 
 /* =========================
    SCOREBOARD
@@ -182,6 +194,7 @@ textarea {
     outline: none;
     border-color: #5f7fff;
 }
+
 
 /* =========================
    PROFILE
@@ -258,13 +271,17 @@ textarea {
     font-size: 12px;
 }
 
+
 /* =========================
    PROFILE EDIT
 ========================= */
 
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(220px, 1fr)
+    );
     gap: 15px;
 }
 
@@ -351,6 +368,7 @@ textarea:focus {
     color: white;
 }
 
+
 /* =========================
    GENERAL
 ========================= */
@@ -382,6 +400,7 @@ textarea:focus {
     gap: 10px;
     flex-wrap: wrap;
 }
+
 
 /* =========================
    TOASTS
@@ -422,6 +441,7 @@ textarea:focus {
 }
 
 @keyframes toastIn {
+
     from {
         opacity: 0;
         transform: translateY(10px);
@@ -431,6 +451,7 @@ textarea:focus {
         opacity: 1;
         transform: translateY(0);
     }
+
 }
 
 footer {
@@ -440,13 +461,18 @@ footer {
     border-top: 1px solid #222;
 }
 
+
 @media (max-width: 850px) {
+
     .scoreboard {
         grid-template-columns: repeat(2, 1fr);
     }
+
 }
 
+
 @media (max-width: 600px) {
+
     .header {
         padding: 15px;
     }
@@ -471,17 +497,23 @@ footer {
         width: 75px;
         height: 75px;
     }
+
 }
+
 </style>
+
 </head>
 
+
 <body>
+
 
 <header class="header">
 
     <h1>
         Rubbish Collection Points
     </h1>
+
 
     <div class="header-right">
 
@@ -492,9 +524,11 @@ footer {
             Loading...
         </span>
 
+
         <button
             id="logoutButton"
             class="button button-secondary"
+            type="button"
         >
             Logout
         </button>
@@ -506,6 +540,7 @@ footer {
 
 <main class="container">
 
+
 <!-- =====================================================
      POINT MANAGEMENT
 ===================================================== -->
@@ -516,20 +551,31 @@ footer {
         Faction Points
     </h2>
 
+
     <p style="color:#888;">
-        Add or remove rubbish collection points from each faction.
-        Each piece of rubbish is worth <strong>1 point</strong>.
+
+        Add or remove rubbish collection points
+        from each faction.
+
+        Each piece of rubbish is worth
+        <strong>1 point</strong>.
+
     </p>
+
 
     <div class="scoreboard">
 
-        <!-- LIMBECK -->
+
+        <!-- =================================================
+             LIMBECK
+        ================================================== -->
 
         <div class="faction-card">
 
             <div class="faction-name limbeck">
                 Limbeck
             </div>
+
 
             <div
                 id="limbeckPoints"
@@ -538,32 +584,40 @@ footer {
                 0
             </div>
 
+
             <input
                 id="limbeckAmount"
                 class="point-input"
                 type="number"
                 min="1"
+                step="1"
                 value="1"
                 placeholder="Points"
             >
 
+
             <div class="faction-actions">
 
                 <button
+                    type="button"
                     class="button button-success"
                     onclick="addPoints('limbeck')"
                 >
                     + Add Points
                 </button>
 
+
                 <button
+                    type="button"
                     class="button button-danger"
                     onclick="removePoints('limbeck')"
                 >
                     − Remove Points
                 </button>
 
+
                 <button
+                    type="button"
                     class="button button-warning"
                     onclick="resetFaction('limbeck')"
                 >
@@ -575,13 +629,16 @@ footer {
         </div>
 
 
-        <!-- LAURENCE -->
+        <!-- =================================================
+             LAURENCE
+        ================================================== -->
 
         <div class="faction-card">
 
             <div class="faction-name laurence">
                 Laurence
             </div>
+
 
             <div
                 id="laurencePoints"
@@ -590,32 +647,40 @@ footer {
                 0
             </div>
 
+
             <input
                 id="laurenceAmount"
                 class="point-input"
                 type="number"
                 min="1"
+                step="1"
                 value="1"
                 placeholder="Points"
             >
 
+
             <div class="faction-actions">
 
                 <button
+                    type="button"
                     class="button button-success"
                     onclick="addPoints('laurence')"
                 >
                     + Add Points
                 </button>
 
+
                 <button
+                    type="button"
                     class="button button-danger"
                     onclick="removePoints('laurence')"
                 >
                     − Remove Points
                 </button>
 
+
                 <button
+                    type="button"
                     class="button button-warning"
                     onclick="resetFaction('laurence')"
                 >
@@ -627,13 +692,16 @@ footer {
         </div>
 
 
-        <!-- MOODY -->
+        <!-- =================================================
+             MOODY
+        ================================================== -->
 
         <div class="faction-card">
 
             <div class="faction-name moody">
                 Moody
             </div>
+
 
             <div
                 id="moodyPoints"
@@ -642,32 +710,40 @@ footer {
                 0
             </div>
 
+
             <input
                 id="moodyAmount"
                 class="point-input"
                 type="number"
                 min="1"
+                step="1"
                 value="1"
                 placeholder="Points"
             >
 
+
             <div class="faction-actions">
 
                 <button
+                    type="button"
                     class="button button-success"
                     onclick="addPoints('moody')"
                 >
                     + Add Points
                 </button>
 
+
                 <button
+                    type="button"
                     class="button button-danger"
                     onclick="removePoints('moody')"
                 >
                     − Remove Points
                 </button>
 
+
                 <button
+                    type="button"
                     class="button button-warning"
                     onclick="resetFaction('moody')"
                 >
@@ -679,13 +755,16 @@ footer {
         </div>
 
 
-        <!-- MURRY -->
+        <!-- =================================================
+             MURRY
+        ================================================== -->
 
         <div class="faction-card">
 
             <div class="faction-name murry">
                 Murry
             </div>
+
 
             <div
                 id="murryPoints"
@@ -694,32 +773,40 @@ footer {
                 0
             </div>
 
+
             <input
                 id="murryAmount"
                 class="point-input"
                 type="number"
                 min="1"
+                step="1"
                 value="1"
                 placeholder="Points"
             >
 
+
             <div class="faction-actions">
 
                 <button
+                    type="button"
                     class="button button-success"
                     onclick="addPoints('murry')"
                 >
                     + Add Points
                 </button>
 
+
                 <button
+                    type="button"
                     class="button button-danger"
                     onclick="removePoints('murry')"
                 >
                     − Remove Points
                 </button>
 
+
                 <button
+                    type="button"
                     class="button button-warning"
                     onclick="resetFaction('murry')"
                 >
@@ -750,6 +837,7 @@ footer {
             alt="Profile picture"
         >
 
+
         <div>
 
             <div
@@ -759,10 +847,12 @@ footer {
                 Loading...
             </div>
 
+
             <div
                 id="profilePronouns"
                 class="profile-pronouns"
             ></div>
+
 
             <span
                 id="profileRole"
@@ -800,18 +890,24 @@ footer {
         Edit Profile
     </h2>
 
+
     <p style="color:#888;">
-        Update the information shown on your teacher profile.
+
+        Update the information shown on
+        your teacher profile.
+
     </p>
 
 
     <div class="form-grid">
+
 
         <div>
 
             <label for="displayName">
                 Display Name
             </label>
+
 
             <input
                 id="displayName"
@@ -829,6 +925,7 @@ footer {
                 Pronouns
             </label>
 
+
             <input
                 id="pronouns"
                 type="text"
@@ -844,6 +941,7 @@ footer {
             <label for="avatarUrl">
                 Profile Picture URL
             </label>
+
 
             <input
                 id="avatarUrl"
@@ -863,6 +961,7 @@ footer {
         Bio
     </label>
 
+
     <textarea
         id="bio"
         maxlength="500"
@@ -877,8 +976,12 @@ footer {
         Subjects / Tags
     </label>
 
+
     <p style="color:#777;font-size:13px;">
-        Select the subjects or tags that apply to you.
+
+        Select the subjects or tags
+        that apply to you.
+
     </p>
 
 
@@ -886,9 +989,11 @@ footer {
         id="tagSelector"
         class="tag-selector"
     >
+
         <span class="loading">
             Loading tags...
         </span>
+
     </div>
 
 
@@ -904,6 +1009,7 @@ footer {
     <button
         id="saveProfileButton"
         class="button button-primary"
+        type="button"
     >
         Save Profile
     </button>
@@ -921,13 +1027,16 @@ footer {
         My Badges
     </h2>
 
+
     <div
         id="profileBadges"
         class="tags"
     >
+
         <span class="loading">
             Loading badges...
         </span>
+
     </div>
 
 </section>
@@ -946,13 +1055,20 @@ footer {
         Administration
     </h2>
 
+
     <p style="color:#888;">
+
         You have Administrator access.
+
     </p>
+
 
     <a href="Admin.html">
 
-        <button class="button button-primary">
+        <button
+            type="button"
+            class="button button-primary"
+        >
             Open Admin Dashboard
         </button>
 
@@ -969,17 +1085,25 @@ footer {
 
     <div class="back-links">
 
+
         <a href="index.html">
 
-            <button class="button button-secondary">
+            <button
+                type="button"
+                class="button button-secondary"
+            >
                 ← Back to Scoreboard
             </button>
 
         </a>
 
+
         <a href="members.html">
 
-            <button class="button button-secondary">
+            <button
+                type="button"
+                class="button button-secondary"
+            >
                 Members
             </button>
 
@@ -989,20 +1113,28 @@ footer {
 
 </section>
 
+
 </main>
 
 
 <footer>
+
     © 2026 Ben Rodda
+
 </footer>
 
 
 <div id="toastContainer"></div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
 
 <script src="teacher.js"></script>
 
+
 </body>
+
 </html>

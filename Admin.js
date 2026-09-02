@@ -14,6 +14,46 @@ let currentUser = null;
 let currentProfile = null;
 let allUsers = [];
 let allBadges = [];
+let allTags = [];
+let allLogs = [];
+let filteredMembers = [];
+
+
+/* =========================================================
+   TAB SWITCHING
+========================================================= */
+
+function initTabs() {
+    const tabButtons = document.querySelectorAll(".tab-button");
+
+    tabButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            const tabName = button.getAttribute("data-tab");
+            switchTab(tabName);
+        });
+    });
+}
+
+function switchTab(tabName) {
+    // Hide all tabs
+    const allTabs = document.querySelectorAll(".tab-content");
+    allTabs.forEach(tab => tab.classList.remove("active"));
+
+    // Show selected tab
+    const selectedTab = document.getElementById(tabName);
+    if (selectedTab) {
+        selectedTab.classList.add("active");
+    }
+
+    // Update button states
+    const allButtons = document.querySelectorAll(".tab-button");
+    allButtons.forEach(button => {
+        button.classList.remove("active");
+        if (button.getAttribute("data-tab") === tabName) {
+            button.classList.add("active");
+        }
+    });
+}
 
 
 /* =========================================================
@@ -109,6 +149,18 @@ async function checkAdmin() {
 
 
 /* =========================================================
+   UPDATE STATS
+========================================================= */
+
+function updateStats() {
+    document.getElementById("statMembers").textContent = allUsers.length;
+    document.getElementById("statBadges").textContent = allBadges.length;
+    document.getElementById("statTags").textContent = allTags.length;
+    document.getElementById("statActions").textContent = allLogs.length;
+}
+
+
+/* =========================================================
    MEMBERS
 ========================================================= */
 
@@ -143,27 +195,34 @@ async function loadMembers() {
         return;
     }
 
-    allUsers =
-        data || [];
+    allUsers = data || [];
+    filteredMembers = allUsers;
+
+    renderMembers();
+    updateStats();
+}
+
+
+function renderMembers() {
 
     const container =
         document.getElementById(
-            "members"
+            "members-list"
         );
 
     container.innerHTML = "";
 
 
-    if (allUsers.length === 0) {
+    if (filteredMembers.length === 0) {
 
-        container.textContent =
-            "No members found.";
+        container.innerHTML =
+            '<div style="color: #888; text-align: center; padding: 20px;">No members found.</div>';
 
         return;
     }
 
 
-    allUsers.forEach(user => {
+    filteredMembers.forEach(user => {
 
         const member =
             document.createElement(
@@ -201,13 +260,16 @@ async function loadMembers() {
                 "div"
             );
 
+        info.className =
+            "member-info";
+
         info.innerHTML = `
             <div class="member-name">
                 ${escapeHtml(user.display_name || "Unnamed User")}
             </div>
 
             <div class="member-email">
-                ${user.id}
+                ID: ${user.id.substring(0, 8)}...
             </div>
         `;
 
@@ -230,8 +292,8 @@ async function loadMembers() {
                 "div"
             );
 
-        controls.style.marginTop =
-            "12px";
+        controls.className =
+            "member-controls";
 
 
         const select =
@@ -279,9 +341,6 @@ async function loadMembers() {
         save.textContent =
             "Save Role";
 
-        save.style.marginTop =
-            "8px";
-
 
         save.onclick = async () => {
 
@@ -311,6 +370,84 @@ async function loadMembers() {
 
 
     populateBadgeUsers();
+}
+
+
+/* =========================================================
+   SEARCH MEMBERS
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const searchBox = 
+        document.getElementById("searchMembers");
+
+    if (searchBox) {
+        searchBox.addEventListener("input", (e) => {
+
+            const query = e.target.value.toLowerCase();
+
+            filteredMembers = allUsers.filter(user =>
+                (user.display_name || "").toLowerCase().includes(query) ||
+                user.id.toLowerCase().includes(query)
+            );
+
+            renderMembers();
+        });
+    }
+
+    const filterAction = 
+        document.getElementById("filterAction");
+
+    if (filterAction) {
+        filterAction.addEventListener("input", (e) => {
+
+            const query = e.target.value.toLowerCase();
+
+            const filtered = allLogs.filter(log =>
+                (log.action || "").toLowerCase().includes(query) ||
+                (log.faction || "").toLowerCase().includes(query)
+            );
+
+            renderLogs(filtered);
+        });
+    }
+
+    initTabs();
+});
+
+
+/* =========================================================
+   ROLE OVERVIEW
+========================================================= */
+
+async function loadRolesOverview() {
+
+    const container =
+        document.getElementById(
+            "roles-list"
+        );
+
+    const adminCount = allUsers.filter(u => u.role === "admin").length;
+    const testerCount = allUsers.filter(u => u.role === "tester").length;
+    const teacherCount = allUsers.filter(u => u.role === "teacher").length;
+
+    container.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+            <div style="background: rgba(255, 74, 74, 0.1); border: 1px solid rgba(255, 74, 74, 0.3); padding: 15px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 28px; font-weight: bold; color: #ff6b6b;">${adminCount}</div>
+                <div style="color: #aaa; font-size: 12px;">Administrators</div>
+            </div>
+            <div style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); padding: 15px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 28px; font-weight: bold; color: #ffc107;">${testerCount}</div>
+                <div style="color: #aaa; font-size: 12px;">Testers</div>
+            </div>
+            <div style="background: rgba(76, 175, 112, 0.1); border: 1px solid rgba(76, 175, 112, 0.3); padding: 15px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 28px; font-weight: bold; color: #66bb6a;">${teacherCount}</div>
+                <div style="color: #aaa; font-size: 12px;">Teachers</div>
+            </div>
+        </div>
+    `;
 }
 
 
@@ -412,13 +549,17 @@ async function loadBadges() {
     }
 
 
-    allBadges =
-        data || [];
+    allBadges = data || [];
+    renderBadges();
+    updateStats();
+}
 
+
+function renderBadges() {
 
     const container =
         document.getElementById(
-            "badges"
+            "badges-list"
         );
 
     container.innerHTML = "";
@@ -426,8 +567,8 @@ async function loadBadges() {
 
     if (allBadges.length === 0) {
 
-        container.textContent =
-            "No badges created.";
+        container.innerHTML =
+            '<div style="color: #888; text-align: center; padding: 20px;">No badges created yet.</div>';
 
     } else {
 
@@ -444,27 +585,30 @@ async function loadBadges() {
 
 
                 row.innerHTML = `
-                    <strong>
-                        ${escapeHtml(
-                            badge.icon || "🏅"
-                        )}
-                        ${escapeHtml(
-                            badge.name
-                        )}
-                    </strong>
-
-                    <div style="color:#777;margin-top:5px;">
-                        ${escapeHtml(
-                            badge.description || ""
-                        )}
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                        <strong style="font-size: 20px;">
+                            ${escapeHtml(
+                                badge.icon || "🏅"
+                            )}
+                        </strong>
+                        <div>
+                            <div style="color: #7fa7ff; font-weight: bold;">
+                                ${escapeHtml(
+                                    badge.name
+                                )}
+                            </div>
+                            <div style="color:#888;font-size:12px;">
+                                ${escapeHtml(
+                                    badge.description || ""
+                                )}
+                            </div>
+                        </div>
                     </div>
-
-                    <br>
 
                     <button
                         class="button danger"
                         onclick="deleteBadge('${badge.id}')">
-                        Delete
+                        🗑️ Delete
                     </button>
                 `;
 
@@ -561,7 +705,7 @@ document.getElementById(
 
 
     showToast(
-        "Badge created.",
+        "✓ Badge created successfully.",
         "success"
     );
 
@@ -577,6 +721,10 @@ document.getElementById(
 async function deleteBadge(
     badgeId
 ) {
+
+    if (!confirm("Are you sure you want to delete this badge?")) {
+        return;
+    }
 
     const {
         error
@@ -646,15 +794,31 @@ async function loadTags() {
     }
 
 
+    allTags = data || [];
+    renderTags();
+    updateStats();
+}
+
+
+function renderTags() {
+
     const container =
         document.getElementById(
-            "tags"
+            "tags-list"
         );
 
     container.innerHTML = "";
 
 
-    data.forEach(tag => {
+    if (allTags.length === 0) {
+
+        container.innerHTML =
+            '<div style="color: #888; text-align: center; padding: 20px;">No tags created yet.</div>';
+
+        return;
+    }
+
+    allTags.forEach(tag => {
 
         const row =
             document.createElement(
@@ -666,22 +830,21 @@ async function loadTags() {
 
 
         row.innerHTML = `
-            <strong>
-                ${escapeHtml(tag.name)}
-            </strong>
-
-            <div style="color:#777;margin-top:5px;">
-                ${escapeHtml(
-                    tag.description || ""
-                )}
+            <div style="margin-bottom: 10px;">
+                <div style="color: #7fa7ff; font-weight: bold;">
+                    ${escapeHtml(tag.name)}
+                </div>
+                <div style="color:#888;font-size:12px;">
+                    ${escapeHtml(
+                        tag.description || ""
+                    )}
+                </div>
             </div>
-
-            <br>
 
             <button
                 class="button danger"
                 onclick="deleteTag('${tag.id}')">
-                Delete
+                🗑️ Delete
             </button>
         `;
 
@@ -761,7 +924,7 @@ document.getElementById(
 
 
     showToast(
-        "Tag created.",
+        "✓ Tag created successfully.",
         "success"
     );
 
@@ -777,6 +940,10 @@ document.getElementById(
 async function deleteTag(
     tagId
 ) {
+
+    if (!confirm("Are you sure you want to delete this tag?")) {
+        return;
+    }
 
     const {
         error
@@ -903,7 +1070,7 @@ document.getElementById(
         !badgeId) {
 
         showToast(
-            "Select a user and badge.",
+            "Select a member and badge.",
             "error"
         );
 
@@ -941,7 +1108,7 @@ document.getElementById(
 
 
     showToast(
-        "Badge awarded successfully.",
+        "🎁 Badge awarded successfully!",
         "success"
     );
 };
@@ -974,7 +1141,7 @@ async function loadLogs() {
                     ascending: false
                 }
             )
-            .limit(100);
+            .limit(200);
 
 
     if (error) {
@@ -982,7 +1149,7 @@ async function loadLogs() {
         console.error(error);
 
         document.getElementById(
-            "logs"
+            "logs-list"
         ).textContent =
             "Failed to load logs.";
 
@@ -990,24 +1157,32 @@ async function loadLogs() {
     }
 
 
+    allLogs = data || [];
+    renderLogs(allLogs);
+    updateStats();
+}
+
+
+function renderLogs(logs) {
+
     const container =
         document.getElementById(
-            "logs"
+            "logs-list"
         );
 
     container.innerHTML = "";
 
 
-    if (!data.length) {
+    if (!logs.length) {
 
-        container.textContent =
-            "No actions logged.";
+        container.innerHTML =
+            '<div style="color: #888; text-align: center; padding: 20px;">No actions logged yet.</div>';
 
         return;
     }
 
 
-    data.forEach(log => {
+    logs.forEach(log => {
 
         const element =
             document.createElement(
@@ -1030,35 +1205,31 @@ async function loadLogs() {
             );
 
 
+        const changeSign = change >= 0 ? "+" : "";
+        const changeColor = change >= 0 ? "#4caf70" : "#ff4a4a";
+
         element.innerHTML = `
             <div class="log-action">
                 ${escapeHtml(log.action)}
             </div>
 
-            <div>
-                <strong>
+            <div class="log-details">
+                <strong style="color: #7fa7ff;">
                     ${escapeHtml(log.faction)}
                 </strong>
-
-                ${change >= 0 ? "+" : ""}
-                ${change.toLocaleString()}
+                <span style="color: ${changeColor}; font-weight: bold;">
+                    ${changeSign}${change.toLocaleString()}
+                </span>
                 points
             </div>
 
             <div class="log-meta">
-                By:
-                ${escapeHtml(
+                Teacher: ${escapeHtml(
                     log.teacher_email || "Unknown"
                 )}
-
-                <br>
-
-                ${log.points_before.toLocaleString()}
-                →
-                ${log.points_after.toLocaleString()}
-
-                <br>
-
+                | 
+                ${log.points_before.toLocaleString()} → ${log.points_after.toLocaleString()}
+                | 
                 ${date}
             </div>
         `;
@@ -1069,6 +1240,37 @@ async function loadLogs() {
         );
     });
 }
+
+
+/* =========================================================
+   EXPORT LOGS
+========================================================= */
+
+document.getElementById(
+    "exportLogs"
+).onclick = () => {
+
+    if (allLogs.length === 0) {
+        showToast("No logs to export.", "error");
+        return;
+    }
+
+    let csv = "Date,Teacher,Action,Faction,Points Change,Before,After\n";
+
+    allLogs.forEach(log => {
+        const date = new Date(log.created_at).toLocaleString();
+        csv += `"${date}","${log.teacher_email || "Unknown"}","${log.action}","${log.faction}",${log.points_change},${log.points_before},${log.points_after}\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `audit-log-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+
+    showToast("✓ Logs exported to CSV.", "success");
+};
 
 
 /* =========================================================
@@ -1134,11 +1336,12 @@ document.getElementById(
     }
 
     await loadMembers();
-
     await loadBadges();
-
     await loadTags();
-
     await loadLogs();
+    await loadRolesOverview();
+
+    // Auto-refresh logs every 30 seconds
+    setInterval(loadLogs, 30000);
 
 })();
