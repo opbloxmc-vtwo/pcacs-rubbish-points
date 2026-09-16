@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Page Not Found</title>
+  <style>
+    :root {
+      --bg: #0b0b0f;
+      --fg: #e8e8e8;
+      --muted: #9a9aa3;
+      --accent: #c9a66b; /* gold-ish */
+      --accent-dim: #7a643a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(1200px 600px at 10% 10%, #151520 0%, transparent 60%),
+        radial-gradient(1000px 500px at 90% 20%, #141218 0%, transparent 60%),
+        var(--bg);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .card {
+      max-width: 520px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(6px);
+      border-radius: 16px;
+      padding: 2.2rem 1.6rem 1.8rem;
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.6),
+        inset 0 0 0 1px rgba(255,255,255,0.03);
+    }
+
+    .code {
+      font-size: 5rem;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: 4px;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--accent-dim) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 8px 40px rgba(201,166,107,0.25);
+      margin-bottom: 0.4rem;
+    }
+
+    .title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .text {
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 1.2rem;
+    }
+
+    .links {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.55rem 0.9rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      color: var(--fg);
+      transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.04));
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .btn.primary {
+      border-color: rgba(201,166,107,0.35);
+      background: linear-gradient(180deg, rgba(201,166,107,0.25), rgba(201,166,107,0.08));
+      color: #fff;
+    }
+
+    .footer-note {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: #6b6b76;
+    }
+
+    /* Subtle decorative banner */
+    .banner {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(600px 200px at 50% -10%, rgba(201,166,107,0.12), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,0.03), transparent 40%);
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <div class="banner"></div>
+
+  <div class="card">
+    <div class="code">404</div>
+    <div class="title">This page has been lost to history</div>
+    <p class="text">
+      The link you followed points to a page that doesn’t exist in this archive.
+      It may have been moved, renamed, or never created.
+    </p>
+
+    <div class="links">
+      <a class="btn primary" href="index.html">Back to the Main Page</a>
+      #<a class="btn" href="contributions.html">View contributions</a>
+      #<a class="btn" href="https://github.com/opbloxmc-vtwo/Joan-of-Arc-Poster">View on GitHub</a>
+    </div>
+
+    <div class="footer-note">
+      Joan of Arc Poster project • PCACS & Ben Rodda
+    </div>
+  </div>
+</body>
+</html>
