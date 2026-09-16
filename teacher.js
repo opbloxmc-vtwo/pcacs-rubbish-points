@@ -138,14 +138,14 @@ function formatRole(role) {
 function redirectToLogin() {
     if (
         window.location.pathname.endsWith(
-            "login.html"
+            "403.html"
         )
     ) {
         return;
     }
 
     window.location.replace(
-        "login.html"
+        "403.html"
     );
 }
 

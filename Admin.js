@@ -134,7 +134,7 @@ async function checkAdmin() {
         setTimeout(() => {
 
             window.location.href =
-                "teacherpage.html";
+                "403.html";
 
         }, 1500);
 
